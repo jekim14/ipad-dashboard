@@ -1,3 +1,11 @@
+// ── Time-Based Theme ───────────────────────────────────
+function updateTheme() {
+  const hour = new Date().getHours();
+  document.body.classList.toggle('night-mode', hour >= 20 || hour < 6);
+}
+updateTheme();
+setInterval(updateTheme, 60 * 1000);
+
 // ── Flip Clock ─────────────────────────────────────────
 
 const KOREAN_DAYS = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
@@ -22,7 +30,7 @@ function updateFlipUnit(id, newVal) {
   setTimeout(() => {
     front.textContent = newVal;
     inner.classList.remove('flipping');
-  }, 600);
+  }, 500);
 }
 
 function updateClock() {
@@ -120,23 +128,60 @@ setInterval(fetchWeather, 30 * 60 * 1000);
 
 let prevRates = { usd: null, kospi: null, kosdaq: null, nasdaq: null };
 
-// Placeholder index values with small random drift each refresh
 function getIndexValue(base, range) {
   return base + (Math.random() - 0.5) * range;
 }
 
 function getIndexChange() {
-  const change = (Math.random() - 0.4) * 30; // slight upward bias
-  return change;
+  return (Math.random() - 0.4) * 30;
+}
+
+function animateValue(element, endValue, decimals, duration) {
+  const startValue = parseFloat(element.textContent.replace(/,/g, '')) || 0;
+  if (isNaN(startValue) || startValue === 0) {
+    element.textContent = endValue.toLocaleString('ko-KR', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+    return;
+  }
+
+  const diff = endValue - startValue;
+  const startTime = performance.now();
+
+  function step(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = startValue + diff * eased;
+
+    element.textContent = current.toLocaleString('ko-KR', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+
+    if (progress < 1) requestAnimationFrame(step);
+  }
+
+  requestAnimationFrame(step);
 }
 
 function updateStockRow(valueId, changeId, value, change, decimals) {
   const valEl = document.getElementById(valueId);
   const chgEl = document.getElementById(changeId);
-  valEl.textContent = value.toLocaleString('ko-KR', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
+
+  // Animate the value count-up
+  animateValue(valEl, value, decimals, 800);
+
+  // Flash the row
+  const row = valEl.closest('.stock-row');
+  if (row) {
+    row.classList.remove('updated');
+    void row.offsetWidth;
+    row.classList.add('updated');
+  }
+
   if (change > 0) {
     chgEl.textContent = `▲ ${change.toFixed(decimals)}`;
     chgEl.className = 'stock-change stock-up';
@@ -150,7 +195,6 @@ function updateStockRow(valueId, changeId, value, change, decimals) {
 }
 
 async function fetchStocksAndFX() {
-  // Placeholder index data with realistic drift
   const kospiVal = getIndexValue(2650, 40);
   const kospiChg = getIndexChange();
   updateStockRow('kospi-value', 'kospi-change', kospiVal, kospiChg, 2);
@@ -163,7 +207,6 @@ async function fetchStocksAndFX() {
   const nasdaqChg = getIndexChange() * 3;
   updateStockRow('nasdaq-value', 'nasdaq-change', nasdaqVal, nasdaqChg, 2);
 
-  // USD/KRW from live API
   try {
     const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const data = await res.json();
@@ -177,7 +220,7 @@ async function fetchStocksAndFX() {
 
   const now = new Date();
   document.getElementById('stocks-updated').textContent =
-    `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 업데이트`;
+    `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} 업데이트`;
 }
 
 fetchStocksAndFX();
@@ -220,22 +263,22 @@ renderCalendar();
 // ── Next Class Countdown ──────────────────────────────
 
 const CLASS_SCHEDULE = {
-  1: [ // 월요일
+  1: [
     { start: '13:00', end: '14:30', name: '기능성식품학' },
     { start: '14:30', end: '16:00', name: '식품생명공학' },
     { start: '18:30', end: '20:00', name: '식품생명공학연구론' },
   ],
-  2: [ // 화요일
+  2: [
     { start: '13:00', end: '14:30', name: '기능성식품학' },
     { start: '14:30', end: '16:00', name: '식품생명공학' },
     { start: '16:00', end: '17:30', name: '진로탐색세미나' },
     { start: '18:30', end: '20:00', name: '식품생명공학연구론' },
   ],
-  3: [ // 수요일
+  3: [
     { start: '13:00', end: '14:30', name: '커피차그리고초콜릿' },
     { start: '14:30', end: '16:00', name: '술의과학문화그리고생활' },
   ],
-  4: [ // 목요일
+  4: [
     { start: '13:00', end: '14:30', name: '커피차그리고초콜릿' },
     { start: '14:30', end: '16:00', name: '술의과학문화그리고생활' },
   ],
@@ -256,7 +299,7 @@ function formatDuration(totalMin) {
 
 function updateClassCountdown() {
   const now = new Date();
-  const dayOfWeek = now.getDay(); // 0=Sun
+  const dayOfWeek = now.getDay();
   const nowMin = now.getHours() * 60 + now.getMinutes();
 
   const nameEl = document.getElementById('class-name');
@@ -266,7 +309,6 @@ function updateClassCountdown() {
 
   const todayClasses = CLASS_SCHEDULE[dayOfWeek] || [];
 
-  // Render today's class list
   if (todayClasses.length > 0) {
     listEl.innerHTML = todayClasses.map(c => {
       const startMin = timeToMinutes(c.start);
@@ -281,9 +323,7 @@ function updateClassCountdown() {
     listEl.innerHTML = '';
   }
 
-  // Find current or next class
   if (todayClasses.length > 0) {
-    // Check if we're in a class
     for (const c of todayClasses) {
       const startMin = timeToMinutes(c.start);
       const endMin = timeToMinutes(c.end);
@@ -296,7 +336,6 @@ function updateClassCountdown() {
       }
     }
 
-    // Check for next class today
     for (const c of todayClasses) {
       const startMin = timeToMinutes(c.start);
       if (nowMin < startMin) {
@@ -309,7 +348,6 @@ function updateClassCountdown() {
     }
   }
 
-  // No more classes today — find next day
   for (let offset = 1; offset <= 7; offset++) {
     const nextDay = (dayOfWeek + offset) % 7;
     const nextClasses = CLASS_SCHEDULE[nextDay];
@@ -317,7 +355,7 @@ function updateClassCountdown() {
       const c = nextClasses[0];
       const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
       if (todayClasses.length > 0) {
-        nameEl.textContent = '오늘 수업 끝! 🎉';
+        nameEl.textContent = '오늘 수업 끝!';
         timeEl.textContent = '';
         infoEl.textContent = `다음: ${dayNames[nextDay]}요일 ${c.start} ${c.name}`;
       } else {
@@ -337,28 +375,40 @@ function updateClassCountdown() {
 updateClassCountdown();
 setInterval(updateClassCountdown, 30 * 1000);
 
-// ── Air Quality (placeholder data) ────────────────────
+// ── Air Quality (circular indicators) ──────────────────
+
+const RING_CIRCUMFERENCE = 188.5; // 2 * PI * 30
+
+function setRingProgress(ringId, percentage) {
+  const ring = document.getElementById(ringId);
+  if (!ring) return;
+  const offset = RING_CIRCUMFERENCE - (percentage / 100) * RING_CIRCUMFERENCE;
+  ring.style.strokeDashoffset = offset;
+}
 
 function updateAirQuality() {
-  // Simulate slight variations in demo data
   const temp = (23 + Math.random() * 1.5).toFixed(1);
   const humidity = Math.floor(43 + Math.random() * 5);
   const pm25 = Math.floor(8 + Math.random() * 10);
   const pm10 = Math.floor(18 + Math.random() * 15);
 
-  document.getElementById('air-temp').textContent = `${temp}°C`;
+  document.getElementById('air-temp').textContent = `${temp}°`;
   document.getElementById('air-humidity').textContent = `${humidity}%`;
+  document.getElementById('air-pm25').textContent = pm25;
+  document.getElementById('air-pm10').textContent = pm10;
 
-  const pm25El = document.getElementById('air-pm25');
-  pm25El.innerHTML = `${pm25} <small>μg/m³</small>`;
+  // Circular progress: temp (15-30 range), humidity (0-100), PM (0-75/150 range)
+  const tempPct = Math.min(100, Math.max(0, ((parseFloat(temp) - 15) / 15) * 100));
+  const humidPct = Math.min(100, humidity);
+  const pm25Pct = Math.min(100, (pm25 / 75) * 100);
+  const pm10Pct = Math.min(100, (pm10 / 150) * 100);
 
-  const pm10El = document.getElementById('air-pm10');
-  pm10El.innerHTML = `${pm10} <small>μg/m³</small>`;
+  setRingProgress('air-temp-ring', tempPct);
+  setRingProgress('air-humidity-ring', humidPct);
+  setRingProgress('air-pm25-ring', pm25Pct);
+  setRingProgress('air-pm10-ring', pm10Pct);
 
   // Update badges
-  const pm25Badge = pm25El.closest('.air-item').querySelector('.air-badge');
-  const pm10Badge = pm10El.closest('.air-item').querySelector('.air-badge');
-
   function getAirStatus(val, thresholds) {
     if (val <= thresholds[0]) return { text: '좋음', cls: 'air-good' };
     if (val <= thresholds[1]) return { text: '보통', cls: 'air-normal' };
@@ -368,6 +418,9 @@ function updateAirQuality() {
 
   const pm25Status = getAirStatus(pm25, [15, 35, 75]);
   const pm10Status = getAirStatus(pm10, [30, 80, 150]);
+
+  const pm25Badge = document.getElementById('air-pm25-badge');
+  const pm10Badge = document.getElementById('air-pm10-badge');
 
   pm25Badge.textContent = pm25Status.text;
   pm25Badge.className = `air-badge ${pm25Status.cls}`;
@@ -385,7 +438,7 @@ const chatInput = document.getElementById('chat-input');
 const chatSend = document.getElementById('chat-send');
 
 const SUNNY_RESPONSES = [
-  '좋은 하루 보내세요! ☀️',
+  '좋은 하루 보내세요!',
   '오늘도 화이팅이에요!',
   '무엇이든 도와드릴게요.',
   '잠시 후 다시 확인해 볼게요!',
@@ -436,12 +489,12 @@ const ytNowPlaying = document.getElementById('yt-now-playing');
 const ytRecommendedEl = document.getElementById('yt-recommended');
 
 const YT_RECOMMENDED = [
-  { id: 'jfKfPfyJRdk', title: '로피 힙합 라디오 📚' },
-  { id: 'lM02vNMRRB0', title: '4K 자연 풍경 🌿' },
-  { id: 'VMAPTo7RVCo', title: '재즈 카페 음악 ☕' },
-  { id: 'mPZkdNGkNBs', title: '빗소리 백색소음 🌧️' },
-  { id: '71jHHGfbUMg', title: '클래식 피아노 🎹' },
-  { id: '3rnS5mf9NQo', title: '한국 야경 🌃' },
+  { id: 'jfKfPfyJRdk', title: '로피 힙합 라디오' },
+  { id: 'lM02vNMRRB0', title: '4K 자연 풍경' },
+  { id: 'VMAPTo7RVCo', title: '재즈 카페 음악' },
+  { id: 'mPZkdNGkNBs', title: '빗소리 백색소음' },
+  { id: '71jHHGfbUMg', title: '클래식 피아노' },
+  { id: '3rnS5mf9NQo', title: '한국 야경' },
 ];
 
 let ytRecent = JSON.parse(localStorage.getItem('yt-recent') || '[]');
@@ -468,17 +521,14 @@ function loadYouTubeVideo(url, title) {
   ytIframe.classList.add('visible');
   ytEmpty.classList.add('hidden');
 
-  // Update now playing
   const displayTitle = title || url;
   ytNowPlaying.textContent = `♪ ${displayTitle}`;
   ytNowPlaying.classList.add('visible');
 
-  // Highlight active recommended item
   ytRecommendedEl.querySelectorAll('.yt-rec-item').forEach(item => {
     item.classList.toggle('active', item.dataset.id === id);
   });
 
-  // Add to recent
   const entry = { url, id, title: displayTitle };
   ytRecent = [entry, ...ytRecent.filter(r => r.id !== id)].slice(0, 3);
   localStorage.setItem('yt-recent', JSON.stringify(ytRecent));

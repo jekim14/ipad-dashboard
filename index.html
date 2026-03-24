@@ -8,10 +8,13 @@
   <title>Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=IBM+Plex+Sans:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Washi paper texture overlay -->
+  <div class="texture-overlay"></div>
+
   <div class="dashboard">
 
     <!-- Row 1, Col 1: Clock -->
@@ -33,7 +36,10 @@
             </div>
           </div>
         </div>
-        <div class="flip-colon">:</div>
+        <div class="flip-colon">
+          <span class="colon-dot"></span>
+          <span class="colon-dot"></span>
+        </div>
         <div class="flip-unit" id="min-tens">
           <div class="flip-card">
             <div class="flip-card-inner" id="min-tens-inner">
@@ -51,12 +57,15 @@
           </div>
         </div>
       </div>
+      <div class="clock-seconds-dot" id="seconds-dot"></div>
       <div class="date-display" id="date-display"></div>
     </div>
 
     <!-- Row 1, Col 2: Weather -->
     <div class="widget weather-widget">
       <div class="widget-header">
+        <span class="widget-label">WEATHER</span>
+        <span class="widget-rule"></span>
         <span class="widget-title">오송</span>
       </div>
       <div class="weather-current" id="weather-current">
@@ -68,12 +77,15 @@
           <span id="current-wind"></span>
         </div>
       </div>
+      <div class="section-divider"></div>
       <div class="weather-forecast" id="weather-forecast"></div>
     </div>
 
     <!-- Row 1, Col 3: Stocks / FX -->
     <div class="widget stocks-widget">
       <div class="widget-header">
+        <span class="widget-label">MARKETS</span>
+        <span class="widget-rule"></span>
         <span class="widget-title">주식 · 환율</span>
       </div>
       <div class="stocks-list" id="stocks-list">
@@ -87,12 +99,21 @@
           <span class="stock-value" id="kosdaq-value">--</span>
           <span class="stock-change" id="kosdaq-change"></span>
         </div>
+        <div class="stock-divider">
+          <span class="divider-dot"></span>
+          <span class="divider-line"></span>
+          <span class="divider-dot"></span>
+        </div>
         <div class="stock-row">
           <span class="stock-label">NASDAQ <small>나스닥</small></span>
           <span class="stock-value" id="nasdaq-value">--</span>
           <span class="stock-change" id="nasdaq-change"></span>
         </div>
-        <div class="stock-divider"></div>
+        <div class="stock-divider">
+          <span class="divider-dot"></span>
+          <span class="divider-line"></span>
+          <span class="divider-dot"></span>
+        </div>
         <div class="stock-row">
           <span class="stock-label">USD/KRW <small>원/달러</small></span>
           <span class="stock-value" id="usd-krw">--</span>
@@ -105,7 +126,9 @@
     <!-- Col 4, Rows 1-3: Sunny Chat (tall, right side) -->
     <div class="widget chat-widget">
       <div class="widget-header">
-        <span class="widget-title">☀️ Sunny</span>
+        <span class="widget-label">ASSISTANT</span>
+        <span class="widget-rule"></span>
+        <span class="widget-title">Sunny</span>
       </div>
       <div class="chat-messages" id="chat-messages">
         <div class="chat-message bot-message">
@@ -115,7 +138,7 @@
       <div class="chat-input-area">
         <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." autocomplete="off">
         <button id="chat-send" aria-label="Send">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="22" y1="2" x2="11" y2="13"></line>
             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
           </svg>
@@ -126,6 +149,8 @@
     <!-- Row 2, Col 1: Calendar -->
     <div class="widget calendar-widget">
       <div class="widget-header">
+        <span class="widget-label">SCHEDULE</span>
+        <span class="widget-rule"></span>
         <span class="widget-title">일정</span>
       </div>
       <div class="calendar-body">
@@ -134,14 +159,20 @@
             <span class="calendar-dot"></span>
             <span>오늘</span>
           </div>
-          <ul class="calendar-events" id="today-events"></ul>
+          <div class="calendar-timeline">
+            <div class="timeline-line"></div>
+            <ul class="calendar-events" id="today-events"></ul>
+          </div>
         </div>
         <div class="calendar-section">
           <div class="calendar-day-header">
             <span class="calendar-dot calendar-dot-tomorrow"></span>
             <span>내일</span>
           </div>
-          <ul class="calendar-events" id="tomorrow-events"></ul>
+          <div class="calendar-timeline">
+            <div class="timeline-line"></div>
+            <ul class="calendar-events" id="tomorrow-events"></ul>
+          </div>
         </div>
       </div>
     </div>
@@ -149,41 +180,68 @@
     <!-- Row 2, Col 2: Next Class Countdown -->
     <div class="widget class-widget">
       <div class="widget-header">
-        <span class="widget-title">📖 다음 강의</span>
+        <span class="widget-label">LECTURE</span>
+        <span class="widget-rule"></span>
+        <span class="widget-title">다음 강의</span>
       </div>
       <div class="class-countdown" id="class-countdown">
         <div class="class-name" id="class-name">불러오는 중...</div>
         <div class="class-time-remaining" id="class-time-remaining"></div>
         <div class="class-schedule-info" id="class-schedule-info"></div>
       </div>
+      <div class="section-divider"></div>
       <div class="class-today-list" id="class-today-list"></div>
     </div>
 
     <!-- Row 2, Col 3: Air Quality -->
     <div class="widget air-widget">
       <div class="widget-header">
+        <span class="widget-label">ENVIRONMENT</span>
+        <span class="widget-rule"></span>
         <span class="widget-title">연구실 환경</span>
       </div>
       <div class="air-grid" id="air-grid">
         <div class="air-item">
-          <div class="air-icon">🌡</div>
-          <div class="air-value" id="air-temp">23.5°C</div>
+          <div class="air-circle-wrap">
+            <svg class="air-circle" viewBox="0 0 72 72">
+              <circle class="air-circle-bg" cx="36" cy="36" r="30" />
+              <circle class="air-circle-fg air-circle-temp" cx="36" cy="36" r="30" id="air-temp-ring" />
+            </svg>
+            <div class="air-circle-value" id="air-temp">23.5°</div>
+          </div>
           <div class="air-label">실내 온도</div>
         </div>
         <div class="air-item">
-          <div class="air-icon">💧</div>
-          <div class="air-value" id="air-humidity">45%</div>
+          <div class="air-circle-wrap">
+            <svg class="air-circle" viewBox="0 0 72 72">
+              <circle class="air-circle-bg" cx="36" cy="36" r="30" />
+              <circle class="air-circle-fg air-circle-humidity" cx="36" cy="36" r="30" id="air-humidity-ring" />
+            </svg>
+            <div class="air-circle-value" id="air-humidity">45%</div>
+          </div>
           <div class="air-label">습도</div>
         </div>
         <div class="air-item">
-          <div class="air-badge air-good">좋음</div>
-          <div class="air-value" id="air-pm25">12 <small>μg/m³</small></div>
+          <div class="air-circle-wrap">
+            <svg class="air-circle" viewBox="0 0 72 72">
+              <circle class="air-circle-bg" cx="36" cy="36" r="30" />
+              <circle class="air-circle-fg air-circle-pm25" cx="36" cy="36" r="30" id="air-pm25-ring" />
+            </svg>
+            <div class="air-circle-value" id="air-pm25">12</div>
+          </div>
           <div class="air-label">PM2.5</div>
+          <div class="air-badge air-good" id="air-pm25-badge">좋음</div>
         </div>
         <div class="air-item">
-          <div class="air-badge air-normal">보통</div>
-          <div class="air-value" id="air-pm10">25 <small>μg/m³</small></div>
+          <div class="air-circle-wrap">
+            <svg class="air-circle" viewBox="0 0 72 72">
+              <circle class="air-circle-bg" cx="36" cy="36" r="30" />
+              <circle class="air-circle-fg air-circle-pm10" cx="36" cy="36" r="30" id="air-pm10-ring" />
+            </svg>
+            <div class="air-circle-value" id="air-pm10">25</div>
+          </div>
           <div class="air-label">PM10</div>
+          <div class="air-badge air-normal" id="air-pm10-badge">보통</div>
         </div>
       </div>
       <div class="air-status" id="air-status">LG ThinQ 연결 대기 중</div>
@@ -192,7 +250,9 @@
     <!-- Row 3, Cols 1-3: YouTube Control -->
     <div class="widget youtube-widget">
       <div class="widget-header">
-        <span class="widget-title">▶ YouTube</span>
+        <span class="widget-label">MEDIA</span>
+        <span class="widget-rule"></span>
+        <span class="widget-title">YouTube</span>
       </div>
       <div class="yt-player-wrap">
         <div class="yt-player-placeholder" id="yt-player-area">
