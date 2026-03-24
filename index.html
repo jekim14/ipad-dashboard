@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Top Left: Flip Clock -->
+    <div class="quadrant clock-quadrant">
+      <div class="flip-clock" id="flip-clock">
+        <div class="flip-unit" id="hour-tens">
+          <div class="flip-card">
+            <div class="flip-card-inner" id="hour-tens-inner">
+              <div class="flip-card-front"><span>0</span></div>
+              <div class="flip-card-back"><span>0</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flip-unit" id="hour-ones">
+          <div class="flip-card">
+            <div class="flip-card-inner" id="hour-ones-inner">
+              <div class="flip-card-front"><span>0</span></div>
+              <div class="flip-card-back"><span>0</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flip-colon">:</div>
+        <div class="flip-unit" id="min-tens">
+          <div class="flip-card">
+            <div class="flip-card-inner" id="min-tens-inner">
+              <div class="flip-card-front"><span>0</span></div>
+              <div class="flip-card-back"><span>0</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flip-unit" id="min-ones">
+          <div class="flip-card">
+            <div class="flip-card-inner" id="min-ones-inner">
+              <div class="flip-card-front"><span>0</span></div>
+              <div class="flip-card-back"><span>0</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="date-display" id="date-display"></div>
+    </div>
+
+    <!-- Top Right: Weather -->
+    <div class="quadrant weather-quadrant">
+      <div class="weather-header">
+        <span class="weather-location">오송</span>
+      </div>
+      <div class="weather-current" id="weather-current">
+        <div class="weather-icon-large" id="current-icon"></div>
+        <div class="weather-temp-large" id="current-temp">--°</div>
+        <div class="weather-details">
+          <span id="current-condition">불러오는 중...</span>
+          <span id="current-humidity"></span>
+          <span id="current-wind"></span>
+        </div>
+      </div>
+      <div class="weather-forecast" id="weather-forecast"></div>
+    </div>
+
+    <!-- Bottom Left: Calendar -->
+    <div class="quadrant calendar-quadrant">
+      <div class="calendar-section">
+        <div class="calendar-day-header">
+          <span class="calendar-dot"></span>
+          <span>오늘</span>
+        </div>
+        <ul class="calendar-events" id="today-events"></ul>
+      </div>
+      <div class="calendar-section">
+        <div class="calendar-day-header">
+          <span class="calendar-dot calendar-dot-tomorrow"></span>
+          <span>내일</span>
+        </div>
+        <ul class="calendar-events" id="tomorrow-events"></ul>
+      </div>
+    </div>
+
+    <!-- Bottom Right: Sunny Chat -->
+    <div class="quadrant chat-quadrant">
+      <div class="chat-header">
+        <span class="chat-bot-name">☀️ Sunny</span>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-message bot-message">
+          <span class="message-text">안녕하세요! 무엇을 도와드릴까요?</span>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." autocomplete="off">
+        <button id="chat-send" aria-label="Send">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

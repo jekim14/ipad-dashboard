@@ -1,0 +1,432 @@
+/* ── Reset & Base ────────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #F5F1EB;
+  --bg-light: #FAF7F2;
+  --ink: #2C2C2C;
+  --ink-light: #6B6560;
+  --ink-faint: #B0A99F;
+  --border: #D4CFC7;
+  --font-serif: 'DM Serif Display', serif;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Paper texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* ── Dashboard Grid ─────────────────────────────────── */
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  height: 100vh;
+  height: 100dvh;
+  gap: 1px;
+  background: var(--border);
+}
+
+.quadrant {
+  background: var(--bg);
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Flip Clock ─────────────────────────────────────── */
+.clock-quadrant {
+  justify-content: center;
+  align-items: center;
+}
+
+.flip-clock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.flip-unit {
+  width: 80px;
+  height: 110px;
+  perspective: 300px;
+}
+
+.flip-card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.flip-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backface-visibility: hidden;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-light);
+}
+
+.flip-card-front span,
+.flip-card-back span {
+  font-family: var(--font-serif);
+  font-size: 72px;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.flip-card-back {
+  transform: rotateX(180deg);
+}
+
+/* Flip animation */
+.flip-card-inner.flipping {
+  animation: flipDown 0.6s ease-in-out;
+}
+
+@keyframes flipDown {
+  0% { transform: rotateX(0deg); }
+  50% { transform: rotateX(-90deg); }
+  100% { transform: rotateX(0deg); }
+}
+
+.flip-colon {
+  font-family: var(--font-serif);
+  font-size: 64px;
+  line-height: 1;
+  color: var(--ink);
+  padding-bottom: 8px;
+  opacity: 0.6;
+}
+
+.date-display {
+  margin-top: 20px;
+  font-size: 15px;
+  color: var(--ink-light);
+  letter-spacing: 0.03em;
+}
+
+/* ── Weather ────────────────────────────────────────── */
+.weather-quadrant {
+  gap: 16px;
+}
+
+.weather-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.weather-location {
+  font-family: var(--font-serif);
+  font-size: 22px;
+}
+
+.weather-current {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+}
+
+.weather-icon-large {
+  font-size: 48px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.weather-temp-large {
+  font-family: var(--font-serif);
+  font-size: 56px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.weather-details {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 13px;
+  color: var(--ink-light);
+}
+
+.weather-forecast {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.forecast-day {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.forecast-day + .forecast-day {
+  border-left: 1px solid var(--border);
+}
+
+.forecast-day-name {
+  font-size: 12px;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.forecast-icon {
+  font-size: 24px;
+}
+
+.forecast-temps {
+  font-size: 13px;
+}
+
+.forecast-high {
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.forecast-low {
+  color: var(--ink-faint);
+  margin-left: 4px;
+}
+
+/* ── Calendar ───────────────────────────────────────── */
+.calendar-quadrant {
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.calendar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.calendar-day-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.calendar-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink);
+  flex-shrink: 0;
+}
+
+.calendar-dot-tomorrow {
+  background: var(--ink-faint);
+}
+
+.calendar-events {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calendar-event {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-light);
+}
+
+.event-time {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-light);
+  white-space: nowrap;
+  min-width: 52px;
+}
+
+.event-title {
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.calendar-empty {
+  font-size: 13px;
+  color: var(--ink-faint);
+  padding: 8px 12px;
+  font-style: italic;
+}
+
+/* ── Chat ───────────────────────────────────────────── */
+.chat-quadrant {
+  gap: 0;
+}
+
+.chat-header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.chat-bot-name {
+  font-family: var(--font-serif);
+  font-size: 20px;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.chat-message {
+  max-width: 85%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.bot-message {
+  align-self: flex-start;
+  background: var(--bg-light);
+}
+
+.user-message {
+  align-self: flex-end;
+  background: transparent;
+}
+
+.message-text {
+  display: block;
+}
+
+.chat-input-area {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+#chat-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-light);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#chat-input::placeholder {
+  color: var(--ink-faint);
+}
+
+#chat-input:focus {
+  border-color: var(--ink-light);
+}
+
+#chat-send {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-light);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.2s;
+  flex-shrink: 0;
+}
+
+#chat-send:hover {
+  border-color: var(--ink-light);
+}
+
+/* ── Scrollbar ──────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ink-faint);
+  border-radius: 2px;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  .quadrant {
+    min-height: 50vh;
+  }
+  .flip-unit {
+    width: 60px;
+    height: 84px;
+  }
+  .flip-card-front span,
+  .flip-card-back span {
+    font-size: 52px;
+  }
+  .flip-colon {
+    font-size: 44px;
+  }
+  .weather-temp-large {
+    font-size: 42px;
+  }
+}
