@@ -13,8 +13,9 @@
 </head>
 <body>
   <div class="dashboard">
-    <!-- Top Left: Flip Clock -->
-    <div class="quadrant clock-quadrant">
+
+    <!-- Row 1, Col 1: Flip Clock + Date -->
+    <div class="widget clock-widget">
       <div class="flip-clock" id="flip-clock">
         <div class="flip-unit" id="hour-tens">
           <div class="flip-card">
@@ -53,10 +54,10 @@
       <div class="date-display" id="date-display"></div>
     </div>
 
-    <!-- Top Right: Weather -->
-    <div class="quadrant weather-quadrant">
-      <div class="weather-header">
-        <span class="weather-location">오송</span>
+    <!-- Row 1, Col 2: Weather -->
+    <div class="widget weather-widget">
+      <div class="widget-header">
+        <span class="widget-title">오송</span>
       </div>
       <div class="weather-current" id="weather-current">
         <div class="weather-icon-large" id="current-icon"></div>
@@ -70,28 +71,102 @@
       <div class="weather-forecast" id="weather-forecast"></div>
     </div>
 
-    <!-- Bottom Left: Calendar -->
-    <div class="quadrant calendar-quadrant">
-      <div class="calendar-section">
-        <div class="calendar-day-header">
-          <span class="calendar-dot"></span>
-          <span>오늘</span>
-        </div>
-        <ul class="calendar-events" id="today-events"></ul>
+    <!-- Row 1, Col 3: Stocks / FX -->
+    <div class="widget stocks-widget">
+      <div class="widget-header">
+        <span class="widget-title">환율 · 주식</span>
       </div>
-      <div class="calendar-section">
-        <div class="calendar-day-header">
-          <span class="calendar-dot calendar-dot-tomorrow"></span>
-          <span>내일</span>
+      <div class="stocks-list" id="stocks-list">
+        <div class="stock-row">
+          <span class="stock-label">USD/KRW</span>
+          <span class="stock-value" id="usd-krw">--</span>
+          <span class="stock-change" id="usd-krw-change"></span>
         </div>
-        <ul class="calendar-events" id="tomorrow-events"></ul>
+        <div class="stock-row">
+          <span class="stock-label">JPY/KRW</span>
+          <span class="stock-value" id="jpy-krw">--</span>
+          <span class="stock-change" id="jpy-krw-change"></span>
+        </div>
+        <div class="stock-divider"></div>
+        <div class="stock-row">
+          <span class="stock-label">KOSPI</span>
+          <span class="stock-value" id="kospi-value">2,687.45</span>
+          <span class="stock-change stock-up" id="kospi-change">▲ 12.30</span>
+        </div>
+      </div>
+      <div class="stocks-updated" id="stocks-updated">업데이트 중...</div>
+    </div>
+
+    <!-- Row 2, Col 1: Calendar -->
+    <div class="widget calendar-widget">
+      <div class="widget-header">
+        <span class="widget-title">일정</span>
+      </div>
+      <div class="calendar-body">
+        <div class="calendar-section">
+          <div class="calendar-day-header">
+            <span class="calendar-dot"></span>
+            <span>오늘</span>
+          </div>
+          <ul class="calendar-events" id="today-events"></ul>
+        </div>
+        <div class="calendar-section">
+          <div class="calendar-day-header">
+            <span class="calendar-dot calendar-dot-tomorrow"></span>
+            <span>내일</span>
+          </div>
+          <ul class="calendar-events" id="tomorrow-events"></ul>
+        </div>
       </div>
     </div>
 
-    <!-- Bottom Right: Sunny Chat -->
-    <div class="quadrant chat-quadrant">
-      <div class="chat-header">
-        <span class="chat-bot-name">☀️ Sunny</span>
+    <!-- Row 2, Col 2: Next Class Countdown -->
+    <div class="widget class-widget">
+      <div class="widget-header">
+        <span class="widget-title">📖 다음 강의</span>
+      </div>
+      <div class="class-countdown" id="class-countdown">
+        <div class="class-name" id="class-name">불러오는 중...</div>
+        <div class="class-time-remaining" id="class-time-remaining"></div>
+        <div class="class-schedule-info" id="class-schedule-info"></div>
+      </div>
+      <div class="class-today-list" id="class-today-list"></div>
+    </div>
+
+    <!-- Row 2, Col 3: Air Quality -->
+    <div class="widget air-widget">
+      <div class="widget-header">
+        <span class="widget-title">연구실 환경</span>
+      </div>
+      <div class="air-grid" id="air-grid">
+        <div class="air-item">
+          <div class="air-icon">🌡</div>
+          <div class="air-value" id="air-temp">23.5°C</div>
+          <div class="air-label">실내 온도</div>
+        </div>
+        <div class="air-item">
+          <div class="air-icon">💧</div>
+          <div class="air-value" id="air-humidity">45%</div>
+          <div class="air-label">습도</div>
+        </div>
+        <div class="air-item">
+          <div class="air-badge air-good">좋음</div>
+          <div class="air-value" id="air-pm25">12 <small>μg/m³</small></div>
+          <div class="air-label">PM2.5</div>
+        </div>
+        <div class="air-item">
+          <div class="air-badge air-normal">보통</div>
+          <div class="air-value" id="air-pm10">25 <small>μg/m³</small></div>
+          <div class="air-label">PM10</div>
+        </div>
+      </div>
+      <div class="air-status" id="air-status">LG ThinQ 연결 대기 중</div>
+    </div>
+
+    <!-- Row 3, Col 1: Sunny Chat -->
+    <div class="widget chat-widget">
+      <div class="widget-header">
+        <span class="widget-title">☀️ Sunny</span>
       </div>
       <div class="chat-messages" id="chat-messages">
         <div class="chat-message bot-message">
@@ -101,13 +176,47 @@
       <div class="chat-input-area">
         <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." autocomplete="off">
         <button id="chat-send" aria-label="Send">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="22" y1="2" x2="11" y2="13"></line>
             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
           </svg>
         </button>
       </div>
     </div>
+
+    <!-- Row 3, Col 2: YouTube Control -->
+    <div class="widget youtube-widget">
+      <div class="widget-header">
+        <span class="widget-title">▶ YouTube</span>
+      </div>
+      <div class="yt-player-wrap">
+        <div class="yt-player-placeholder" id="yt-player-area">
+          <iframe id="yt-iframe" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+          <div class="yt-empty" id="yt-empty">URL을 입력해주세요</div>
+        </div>
+      </div>
+      <div class="yt-controls">
+        <button class="yt-btn" id="yt-prev" title="이전">⏮</button>
+        <button class="yt-btn" id="yt-play" title="재생/일시정지">⏯</button>
+        <button class="yt-btn" id="yt-next" title="다음">⏭</button>
+        <input type="range" class="yt-volume" id="yt-volume" min="0" max="100" value="50" title="볼륨">
+      </div>
+      <div class="yt-url-area">
+        <input type="text" id="yt-url-input" placeholder="YouTube URL 붙여넣기..." autocomplete="off">
+        <button class="yt-btn" id="yt-load">↵</button>
+      </div>
+      <ul class="yt-recent" id="yt-recent"></ul>
+    </div>
+
+    <!-- Row 3, Col 3: Empty / branding -->
+    <div class="widget brand-widget">
+      <div class="brand-content">
+        <div class="brand-logo">⬡</div>
+        <div class="brand-name">Dashboard</div>
+        <div class="brand-sub">iPad E-ink Interface</div>
+      </div>
+    </div>
+
   </div>
   <script src="script.js"></script>
 </body>

@@ -36,27 +36,41 @@ body::before {
   z-index: 100;
 }
 
-/* ── Dashboard Grid ─────────────────────────────────── */
+/* ── Dashboard Grid (3×3) ────────────────────────────── */
 .dashboard {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
   height: 100vh;
   height: 100dvh;
   gap: 1px;
   background: var(--border);
 }
 
-.quadrant {
+.widget {
   background: var(--bg);
-  padding: 28px 32px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
+.widget-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.widget-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 1.2;
+}
+
 /* ── Flip Clock ─────────────────────────────────────── */
-.clock-quadrant {
+.clock-widget {
   justify-content: center;
   align-items: center;
 }
@@ -64,12 +78,12 @@ body::before {
 .flip-clock {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .flip-unit {
-  width: 80px;
-  height: 110px;
+  width: 64px;
+  height: 88px;
   perspective: 300px;
 }
 
@@ -95,14 +109,14 @@ body::before {
   justify-content: center;
   backface-visibility: hidden;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 5px;
   background: var(--bg-light);
 }
 
 .flip-card-front span,
 .flip-card-back span {
   font-family: var(--font-serif);
-  font-size: 72px;
+  font-size: 56px;
   line-height: 1;
   color: var(--ink);
 }
@@ -111,7 +125,6 @@ body::before {
   transform: rotateX(180deg);
 }
 
-/* Flip animation */
 .flip-card-inner.flipping {
   animation: flipDown 0.6s ease-in-out;
 }
@@ -124,52 +137,41 @@ body::before {
 
 .flip-colon {
   font-family: var(--font-serif);
-  font-size: 64px;
+  font-size: 48px;
   line-height: 1;
   color: var(--ink);
-  padding-bottom: 8px;
+  padding-bottom: 6px;
   opacity: 0.6;
 }
 
 .date-display {
-  margin-top: 20px;
-  font-size: 15px;
+  margin-top: 14px;
+  font-size: 13px;
   color: var(--ink-light);
   letter-spacing: 0.03em;
 }
 
 /* ── Weather ────────────────────────────────────────── */
-.weather-quadrant {
-  gap: 16px;
-}
-
-.weather-header {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.weather-location {
-  font-family: var(--font-serif);
-  font-size: 22px;
+.weather-widget {
+  gap: 10px;
 }
 
 .weather-current {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 14px;
   flex: 1;
 }
 
 .weather-icon-large {
-  font-size: 48px;
+  font-size: 36px;
   line-height: 1;
   flex-shrink: 0;
 }
 
 .weather-temp-large {
   font-family: var(--font-serif);
-  font-size: 56px;
+  font-size: 42px;
   line-height: 1;
   flex-shrink: 0;
 }
@@ -177,8 +179,8 @@ body::before {
 .weather-details {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  font-size: 13px;
+  gap: 2px;
+  font-size: 12px;
   color: var(--ink-light);
 }
 
@@ -186,7 +188,8 @@ body::before {
   display: flex;
   gap: 0;
   border-top: 1px solid var(--border);
-  padding-top: 16px;
+  padding-top: 10px;
+  flex-shrink: 0;
 }
 
 .forecast-day {
@@ -195,7 +198,7 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .forecast-day + .forecast-day {
@@ -203,18 +206,18 @@ body::before {
 }
 
 .forecast-day-name {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--ink-light);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .forecast-icon {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .forecast-temps {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .forecast-high {
@@ -224,26 +227,91 @@ body::before {
 
 .forecast-low {
   color: var(--ink-faint);
-  margin-left: 4px;
+  margin-left: 3px;
+}
+
+/* ── Stocks / FX ────────────────────────────────────── */
+.stocks-widget {
+  gap: 8px;
+}
+
+.stocks-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.stock-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.stock-label {
+  font-size: 12px;
+  color: var(--ink-light);
+  min-width: 70px;
+  letter-spacing: 0.02em;
+}
+
+.stock-value {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  flex: 1;
+}
+
+.stock-change {
+  font-size: 12px;
+  color: var(--ink-light);
+}
+
+.stock-up {
+  color: var(--ink);
+}
+
+.stock-down {
+  color: var(--ink-light);
+}
+
+.stock-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0;
+}
+
+.stocks-updated {
+  font-size: 10px;
+  color: var(--ink-faint);
+  text-align: right;
+  flex-shrink: 0;
 }
 
 /* ── Calendar ───────────────────────────────────────── */
-.calendar-quadrant {
-  gap: 20px;
+.calendar-widget {
+  gap: 0;
+}
+
+.calendar-body {
+  flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .calendar-section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .calendar-day-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  gap: 6px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--ink-light);
   text-transform: uppercase;
@@ -251,8 +319,8 @@ body::before {
 }
 
 .calendar-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--ink);
   flex-shrink: 0;
@@ -266,53 +334,188 @@ body::before {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .calendar-event {
   display: flex;
   align-items: baseline;
-  gap: 12px;
-  padding: 8px 12px;
+  gap: 8px;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-light);
+}
+
+.event-time {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ink-light);
+  white-space: nowrap;
+  min-width: 42px;
+}
+
+.event-title {
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.calendar-empty {
+  font-size: 12px;
+  color: var(--ink-faint);
+  padding: 5px 8px;
+  font-style: italic;
+}
+
+/* ── Next Class Countdown ───────────────────────────── */
+.class-widget {
+  gap: 8px;
+}
+
+.class-countdown {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.class-name {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.class-time-remaining {
+  font-size: 28px;
+  font-family: var(--font-serif);
+  color: var(--ink);
+  line-height: 1;
+}
+
+.class-schedule-info {
+  font-size: 12px;
+  color: var(--ink-light);
+  margin-top: 2px;
+}
+
+.class-today-list {
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex-shrink: 0;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+.class-today-item {
+  font-size: 11px;
+  color: var(--ink-light);
+  display: flex;
+  gap: 6px;
+}
+
+.class-today-item.active {
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.class-today-time {
+  min-width: 80px;
+  white-space: nowrap;
+}
+
+/* ── Air Quality ────────────────────────────────────── */
+.air-widget {
+  gap: 8px;
+}
+
+.air-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.air-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 4px;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--bg-light);
 }
 
-.event-time {
-  font-size: 13px;
-  font-weight: 400;
+.air-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.air-value {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.air-value small {
+  font-family: var(--font-sans);
+  font-size: 10px;
   color: var(--ink-light);
-  white-space: nowrap;
-  min-width: 52px;
 }
 
-.event-title {
-  font-size: 14px;
+.air-label {
+  font-size: 10px;
+  color: var(--ink-light);
+  letter-spacing: 0.02em;
+}
+
+.air-badge {
+  font-size: 10px;
+  padding: 1px 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  letter-spacing: 0.03em;
+}
+
+.air-good {
   color: var(--ink);
+  border-color: var(--ink-light);
 }
 
-.calendar-empty {
-  font-size: 13px;
+.air-normal {
+  color: var(--ink-light);
+  border-color: var(--ink-faint);
+}
+
+.air-bad {
+  color: var(--ink);
+  border-color: var(--ink);
+  font-weight: 500;
+}
+
+.air-status {
+  font-size: 10px;
   color: var(--ink-faint);
-  padding: 8px 12px;
-  font-style: italic;
+  text-align: right;
+  flex-shrink: 0;
 }
 
 /* ── Chat ───────────────────────────────────────────── */
-.chat-quadrant {
+.chat-widget {
   gap: 0;
 }
 
-.chat-header {
-  padding-bottom: 12px;
+.chat-widget .widget-header {
+  padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 12px;
-}
-
-.chat-bot-name {
-  font-family: var(--font-serif);
-  font-size: 20px;
+  margin-bottom: 8px;
 }
 
 .chat-messages {
@@ -320,16 +523,16 @@ body::before {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   padding: 4px 0;
 }
 
 .chat-message {
-  max-width: 85%;
-  padding: 10px 14px;
+  max-width: 88%;
+  padding: 7px 10px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -349,19 +552,20 @@ body::before {
 
 .chat-input-area {
   display: flex;
-  gap: 8px;
-  padding-top: 12px;
+  gap: 6px;
+  padding-top: 8px;
   border-top: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 #chat-input {
   flex: 1;
-  padding: 10px 14px;
+  padding: 7px 10px;
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--bg-light);
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: 12px;
   color: var(--ink);
   outline: none;
   transition: border-color 0.2s;
@@ -376,8 +580,8 @@ body::before {
 }
 
 #chat-send {
-  width: 42px;
-  height: 42px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -394,9 +598,187 @@ body::before {
   border-color: var(--ink-light);
 }
 
+/* ── YouTube ────────────────────────────────────────── */
+.youtube-widget {
+  gap: 6px;
+}
+
+.yt-player-wrap {
+  flex: 1;
+  min-height: 0;
+}
+
+.yt-player-placeholder {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-light);
+  position: relative;
+  overflow: hidden;
+}
+
+#yt-iframe {
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+#yt-iframe.visible {
+  display: block;
+}
+
+.yt-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+.yt-empty.hidden {
+  display: none;
+}
+
+.yt-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.yt-btn {
+  width: 30px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-light);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 12px;
+  transition: border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.yt-btn:hover {
+  border-color: var(--ink-light);
+}
+
+.yt-volume {
+  flex: 1;
+  height: 2px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--border);
+  border-radius: 1px;
+  outline: none;
+  margin: 0 4px;
+}
+
+.yt-volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ink-light);
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.yt-url-area {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+#yt-url-input {
+  flex: 1;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-light);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#yt-url-input::placeholder {
+  color: var(--ink-faint);
+}
+
+#yt-url-input:focus {
+  border-color: var(--ink-light);
+}
+
+.yt-recent {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+  max-height: 48px;
+  overflow-y: auto;
+}
+
+.yt-recent-item {
+  font-size: 10px;
+  color: var(--ink-light);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s;
+}
+
+.yt-recent-item:hover {
+  color: var(--ink);
+}
+
+/* ── Brand Widget ───────────────────────────────────── */
+.brand-widget {
+  justify-content: center;
+  align-items: center;
+}
+
+.brand-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-logo {
+  font-size: 36px;
+  color: var(--ink-faint);
+  line-height: 1;
+}
+
+.brand-name {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--ink-light);
+}
+
+.brand-sub {
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 /* ── Scrollbar ──────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -411,22 +793,20 @@ body::before {
   .dashboard {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
+    overflow-y: auto;
   }
-  .quadrant {
-    min-height: 50vh;
+  .widget {
+    min-height: 280px;
   }
   .flip-unit {
-    width: 60px;
-    height: 84px;
+    width: 50px;
+    height: 70px;
   }
   .flip-card-front span,
   .flip-card-back span {
-    font-size: 52px;
+    font-size: 42px;
   }
   .flip-colon {
-    font-size: 44px;
-  }
-  .weather-temp-large {
-    font-size: 42px;
+    font-size: 36px;
   }
 }

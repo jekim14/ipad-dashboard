@@ -16,7 +16,6 @@ function updateFlipUnit(id, newVal) {
 
   back.textContent = newVal;
   inner.classList.remove('flipping');
-  // Force reflow
   void inner.offsetWidth;
   inner.classList.add('flipping');
 
@@ -44,7 +43,6 @@ function updateClock() {
     `${year}년 ${month}월 ${day}일 ${dayName}`;
 }
 
-// Initialize clock immediately, then tick every second
 updateClock();
 setInterval(updateClock, 1000);
 
@@ -118,14 +116,75 @@ async function fetchWeather() {
 fetchWeather();
 setInterval(fetchWeather, 30 * 60 * 1000);
 
+// ── Stocks / FX ───────────────────────────────────────
+
+let prevRates = { usd: null, jpy: null };
+
+async function fetchExchangeRates() {
+  try {
+    const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    const data = await res.json();
+
+    const krwPerUsd = data.rates.KRW;
+    const jpyPerUsd = data.rates.JPY;
+    const krwPerJpy = krwPerUsd / jpyPerUsd;
+
+    // USD/KRW
+    const usdEl = document.getElementById('usd-krw');
+    const usdChangeEl = document.getElementById('usd-krw-change');
+    usdEl.textContent = krwPerUsd.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
+    if (prevRates.usd !== null) {
+      const diff = krwPerUsd - prevRates.usd;
+      if (diff > 0) {
+        usdChangeEl.textContent = `▲ ${diff.toFixed(2)}`;
+        usdChangeEl.className = 'stock-change stock-up';
+      } else if (diff < 0) {
+        usdChangeEl.textContent = `▼ ${Math.abs(diff).toFixed(2)}`;
+        usdChangeEl.className = 'stock-change stock-down';
+      } else {
+        usdChangeEl.textContent = '─';
+        usdChangeEl.className = 'stock-change';
+      }
+    }
+    prevRates.usd = krwPerUsd;
+
+    // JPY/KRW (100 JPY)
+    const jpyEl = document.getElementById('jpy-krw');
+    const jpyChangeEl = document.getElementById('jpy-krw-change');
+    const jpy100 = krwPerJpy * 100;
+    jpyEl.textContent = jpy100.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
+    if (prevRates.jpy !== null) {
+      const diff = jpy100 - prevRates.jpy;
+      if (diff > 0) {
+        jpyChangeEl.textContent = `▲ ${diff.toFixed(2)}`;
+        jpyChangeEl.className = 'stock-change stock-up';
+      } else if (diff < 0) {
+        jpyChangeEl.textContent = `▼ ${Math.abs(diff).toFixed(2)}`;
+        jpyChangeEl.className = 'stock-change stock-down';
+      } else {
+        jpyChangeEl.textContent = '─';
+        jpyChangeEl.className = 'stock-change';
+      }
+    }
+    prevRates.jpy = jpy100;
+
+    // Update JPY label to show it's per 100 JPY
+    document.querySelector('#jpy-krw').closest('.stock-row').querySelector('.stock-label').textContent = '100JPY/KRW';
+
+    const now = new Date();
+    document.getElementById('stocks-updated').textContent =
+      `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 업데이트`;
+  } catch (e) {
+    document.getElementById('stocks-updated').textContent = '환율 불러오기 실패';
+  }
+}
+
+fetchExchangeRates();
+setInterval(fetchExchangeRates, 30 * 60 * 1000);
+
 // ── Calendar ───────────────────────────────────────────
 
 function renderCalendar() {
-  const now = new Date();
-  const tomorrow = new Date(now);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  // Demo events - replace with real calendar data later
   const todayEvents = [
     { time: '09:00', title: '팀 스탠드업 미팅' },
     { time: '11:00', title: '프로젝트 리뷰' },
@@ -156,6 +215,167 @@ function renderCalendar() {
 }
 
 renderCalendar();
+
+// ── Next Class Countdown ──────────────────────────────
+
+const CLASS_SCHEDULE = {
+  1: [ // 월요일
+    { start: '13:00', end: '14:30', name: '기능성식품학' },
+    { start: '14:30', end: '16:00', name: '식품생명공학' },
+    { start: '18:30', end: '20:00', name: '식품생명공학연구론' },
+  ],
+  2: [ // 화요일
+    { start: '13:00', end: '14:30', name: '기능성식품학' },
+    { start: '14:30', end: '16:00', name: '식품생명공학' },
+    { start: '16:00', end: '17:30', name: '진로탐색세미나' },
+    { start: '18:30', end: '20:00', name: '식품생명공학연구론' },
+  ],
+  3: [ // 수요일
+    { start: '13:00', end: '14:30', name: '커피차그리고초콜릿' },
+    { start: '14:30', end: '16:00', name: '술의과학문화그리고생활' },
+  ],
+  4: [ // 목요일
+    { start: '13:00', end: '14:30', name: '커피차그리고초콜릿' },
+    { start: '14:30', end: '16:00', name: '술의과학문화그리고생활' },
+  ],
+};
+
+function timeToMinutes(timeStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function formatDuration(totalMin) {
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  if (h > 0 && m > 0) return `${h}시간 ${m}분`;
+  if (h > 0) return `${h}시간`;
+  return `${m}분`;
+}
+
+function updateClassCountdown() {
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0=Sun
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+
+  const nameEl = document.getElementById('class-name');
+  const timeEl = document.getElementById('class-time-remaining');
+  const infoEl = document.getElementById('class-schedule-info');
+  const listEl = document.getElementById('class-today-list');
+
+  const todayClasses = CLASS_SCHEDULE[dayOfWeek] || [];
+
+  // Render today's class list
+  if (todayClasses.length > 0) {
+    listEl.innerHTML = todayClasses.map(c => {
+      const startMin = timeToMinutes(c.start);
+      const endMin = timeToMinutes(c.end);
+      const isActive = nowMin >= startMin && nowMin < endMin;
+      return `<div class="class-today-item${isActive ? ' active' : ''}">
+        <span class="class-today-time">${c.start}–${c.end}</span>
+        <span>${c.name}</span>
+      </div>`;
+    }).join('');
+  } else {
+    listEl.innerHTML = '';
+  }
+
+  // Find current or next class
+  if (todayClasses.length > 0) {
+    // Check if we're in a class
+    for (const c of todayClasses) {
+      const startMin = timeToMinutes(c.start);
+      const endMin = timeToMinutes(c.end);
+      if (nowMin >= startMin && nowMin < endMin) {
+        const remaining = endMin - nowMin;
+        nameEl.textContent = c.name;
+        timeEl.textContent = `진행 중`;
+        infoEl.textContent = `${formatDuration(remaining)} 남음`;
+        return;
+      }
+    }
+
+    // Check for next class today
+    for (const c of todayClasses) {
+      const startMin = timeToMinutes(c.start);
+      if (nowMin < startMin) {
+        const until = startMin - nowMin;
+        nameEl.textContent = c.name;
+        timeEl.textContent = formatDuration(until);
+        infoEl.textContent = `${c.start} 시작`;
+        return;
+      }
+    }
+  }
+
+  // No more classes today — find next day
+  for (let offset = 1; offset <= 7; offset++) {
+    const nextDay = (dayOfWeek + offset) % 7;
+    const nextClasses = CLASS_SCHEDULE[nextDay];
+    if (nextClasses && nextClasses.length > 0) {
+      const c = nextClasses[0];
+      const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+      if (todayClasses.length > 0) {
+        nameEl.textContent = '오늘 수업 끝! 🎉';
+        timeEl.textContent = '';
+        infoEl.textContent = `다음: ${dayNames[nextDay]}요일 ${c.start} ${c.name}`;
+      } else {
+        nameEl.textContent = '오늘은 수업 없음';
+        timeEl.textContent = '';
+        infoEl.textContent = `다음: ${dayNames[nextDay]}요일 ${c.start} ${c.name}`;
+      }
+      return;
+    }
+  }
+
+  nameEl.textContent = '수업 없음';
+  timeEl.textContent = '';
+  infoEl.textContent = '';
+}
+
+updateClassCountdown();
+setInterval(updateClassCountdown, 30 * 1000);
+
+// ── Air Quality (placeholder data) ────────────────────
+
+function updateAirQuality() {
+  // Simulate slight variations in demo data
+  const temp = (23 + Math.random() * 1.5).toFixed(1);
+  const humidity = Math.floor(43 + Math.random() * 5);
+  const pm25 = Math.floor(8 + Math.random() * 10);
+  const pm10 = Math.floor(18 + Math.random() * 15);
+
+  document.getElementById('air-temp').textContent = `${temp}°C`;
+  document.getElementById('air-humidity').textContent = `${humidity}%`;
+
+  const pm25El = document.getElementById('air-pm25');
+  pm25El.innerHTML = `${pm25} <small>μg/m³</small>`;
+
+  const pm10El = document.getElementById('air-pm10');
+  pm10El.innerHTML = `${pm10} <small>μg/m³</small>`;
+
+  // Update badges
+  const pm25Badge = pm25El.closest('.air-item').querySelector('.air-badge');
+  const pm10Badge = pm10El.closest('.air-item').querySelector('.air-badge');
+
+  function getAirStatus(val, thresholds) {
+    if (val <= thresholds[0]) return { text: '좋음', cls: 'air-good' };
+    if (val <= thresholds[1]) return { text: '보통', cls: 'air-normal' };
+    if (val <= thresholds[2]) return { text: '나쁨', cls: 'air-bad' };
+    return { text: '매우나쁨', cls: 'air-bad' };
+  }
+
+  const pm25Status = getAirStatus(pm25, [15, 35, 75]);
+  const pm10Status = getAirStatus(pm10, [30, 80, 150]);
+
+  pm25Badge.textContent = pm25Status.text;
+  pm25Badge.className = `air-badge ${pm25Status.cls}`;
+  pm10Badge.textContent = pm10Status.text;
+  pm10Badge.className = `air-badge ${pm10Status.cls}`;
+}
+
+updateAirQuality();
+setInterval(updateAirQuality, 5 * 60 * 1000);
 
 // ── Chat ───────────────────────────────────────────────
 
@@ -193,7 +413,6 @@ function sendMessage() {
   addMessage(text, true);
   chatInput.value = '';
 
-  // Placeholder bot response
   setTimeout(() => {
     const response = SUNNY_RESPONSES[Math.floor(Math.random() * SUNNY_RESPONSES.length)];
     addMessage(response, false);
@@ -204,3 +423,68 @@ chatSend.addEventListener('click', sendMessage);
 chatInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
+
+// ── YouTube Control ───────────────────────────────────
+
+const ytIframe = document.getElementById('yt-iframe');
+const ytEmpty = document.getElementById('yt-empty');
+const ytUrlInput = document.getElementById('yt-url-input');
+const ytLoadBtn = document.getElementById('yt-load');
+const ytRecentList = document.getElementById('yt-recent');
+
+let ytRecent = JSON.parse(localStorage.getItem('yt-recent') || '[]');
+
+function extractYouTubeId(url) {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/,
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+function loadYouTubeVideo(url) {
+  const id = extractYouTubeId(url);
+  if (!id) return;
+
+  ytIframe.src = `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`;
+  ytIframe.classList.add('visible');
+  ytEmpty.classList.add('hidden');
+
+  // Add to recent
+  const entry = { url, id, title: url };
+  ytRecent = [entry, ...ytRecent.filter(r => r.id !== id)].slice(0, 3);
+  localStorage.setItem('yt-recent', JSON.stringify(ytRecent));
+  renderYtRecent();
+}
+
+function renderYtRecent() {
+  ytRecentList.innerHTML = ytRecent.map(r =>
+    `<li class="yt-recent-item" data-url="${escapeHtml(r.url)}">▶ ${escapeHtml(r.url)}</li>`
+  ).join('');
+
+  ytRecentList.querySelectorAll('.yt-recent-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const url = item.getAttribute('data-url');
+      ytUrlInput.value = url;
+      loadYouTubeVideo(url);
+    });
+  });
+}
+
+ytLoadBtn.addEventListener('click', () => {
+  const url = ytUrlInput.value.trim();
+  if (url) loadYouTubeVideo(url);
+});
+
+ytUrlInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const url = ytUrlInput.value.trim();
+    if (url) loadYouTubeVideo(url);
+  }
+});
+
+renderYtRecent();
