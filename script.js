@@ -1,73 +1,28 @@
-// ── Time-Based Theme ───────────────────────────────────
-function updateTheme() {
-  const hour = new Date().getHours();
-  document.body.classList.toggle('night-mode', hour >= 20 || hour < 6);
-}
-updateTheme();
-setInterval(updateTheme, 60 * 1000);
-
-// ── Flip Clock ─────────────────────────────────────────
+// ── Clock ─────────────────────────────────────────────
 
 const KOREAN_DAYS = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-const KOREAN_SHORT_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
-
-let prevDigits = { ht: '', ho: '', mt: '', mo: '' };
-
-function updateFlipUnit(id, newVal) {
-  const key = { 'hour-tens': 'ht', 'hour-ones': 'ho', 'min-tens': 'mt', 'min-ones': 'mo' }[id];
-  if (prevDigits[key] === newVal) return;
-  prevDigits[key] = newVal;
-
-  const inner = document.getElementById(id + '-inner');
-  const front = inner.querySelector('.flip-card-front span');
-  const back = inner.querySelector('.flip-card-back span');
-
-  back.textContent = newVal;
-  inner.classList.remove('flipping');
-  void inner.offsetWidth;
-  inner.classList.add('flipping');
-
-  setTimeout(() => {
-    front.textContent = newVal;
-    inner.classList.remove('flipping');
-  }, 500);
-}
 
 function updateClock() {
   const now = new Date();
   const h = String(now.getHours()).padStart(2, '0');
   const m = String(now.getMinutes()).padStart(2, '0');
 
-  updateFlipUnit('hour-tens', h[0]);
-  updateFlipUnit('hour-ones', h[1]);
-  updateFlipUnit('min-tens', m[0]);
-  updateFlipUnit('min-ones', m[1]);
+  document.getElementById('clock-digits').textContent = `${h}:${m}`;
 
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
   const day = now.getDate();
   const dayName = KOREAN_DAYS[now.getDay()];
-  document.getElementById('date-display').textContent =
+  document.getElementById('clock-date').textContent =
     `${year}년 ${month}월 ${day}일 ${dayName}`;
 }
 
 updateClock();
 setInterval(updateClock, 1000);
 
-// ── Weather ────────────────────────────────────────────
+// ── Weather ───────────────────────────────────────────
 
 const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast?latitude=36.7377&longitude=127.0474&current=temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia/Seoul&forecast_days=3';
-
-const WMO_ICONS = {
-  0: '☀', 1: '🌤', 2: '⛅', 3: '☁',
-  45: '🌫', 48: '🌫',
-  51: '🌦', 53: '🌦', 55: '🌧',
-  61: '🌧', 63: '🌧', 65: '🌧',
-  71: '🌨', 73: '🌨', 75: '❄',
-  77: '❄', 80: '🌧', 81: '🌧', 82: '🌧',
-  85: '🌨', 86: '🌨',
-  95: '⛈', 96: '⛈', 99: '⛈',
-};
 
 const WMO_DESC = {
   0: '맑음', 1: '대체로 맑음', 2: '구름 조금', 3: '흐림',
@@ -77,10 +32,11 @@ const WMO_DESC = {
   71: '가벼운 눈', 73: '눈', 75: '강한 눈',
   77: '진눈깨비', 80: '소나기', 81: '소나기', 82: '강한 소나기',
   85: '눈보라', 86: '강한 눈보라',
-  95: '뇌우', 96: '뇌우(우박)', 99: '뇌우(강한 우박)',
+  95: '뇌우', 96: '뇌우', 99: '뇌우',
 };
 
-function getWeatherIcon(code) { return WMO_ICONS[code] || '☁'; }
+const KOREAN_SHORT_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
 function getWeatherDesc(code) { return WMO_DESC[code] || '알 수 없음'; }
 
 async function fetchWeather() {
@@ -89,7 +45,6 @@ async function fetchWeather() {
     const data = await res.json();
 
     const current = data.current;
-    document.getElementById('current-icon').textContent = getWeatherIcon(current.weather_code);
     document.getElementById('current-temp').textContent = `${Math.round(current.temperature_2m)}°`;
     document.getElementById('current-condition').textContent = getWeatherDesc(current.weather_code);
     document.getElementById('current-humidity').textContent = `습도 ${current.relative_humidity_2m}%`;
@@ -102,14 +57,14 @@ async function fetchWeather() {
     for (let i = 0; i < 3; i++) {
       const date = new Date(daily.time[i] + 'T00:00:00');
       const dayName = i === 0 ? '오늘' : KOREAN_SHORT_DAYS[date.getDay()];
-      const icon = getWeatherIcon(daily.weather_code[i]);
+      const desc = getWeatherDesc(daily.weather_code[i]);
       const high = Math.round(daily.temperature_2m_max[i]);
       const low = Math.round(daily.temperature_2m_min[i]);
 
       forecastEl.innerHTML += `
         <div class="forecast-day">
           <span class="forecast-day-name">${dayName}</span>
-          <span class="forecast-icon">${icon}</span>
+          <span class="forecast-desc">${desc}</span>
           <span class="forecast-temps">
             <span class="forecast-high">${high}°</span>
             <span class="forecast-low">${low}°</span>
@@ -117,16 +72,16 @@ async function fetchWeather() {
         </div>`;
     }
   } catch (e) {
-    document.getElementById('current-condition').textContent = '날씨를 불러올 수 없습니다';
+    document.getElementById('current-condition').textContent = '불러올 수 없음';
   }
 }
 
 fetchWeather();
 setInterval(fetchWeather, 30 * 60 * 1000);
 
-// ── Stocks / FX ───────────────────────────────────────
+// ── Stocks / FX ──────────────────────────────────────
 
-let prevRates = { usd: null, kospi: null, kosdaq: null, nasdaq: null };
+let prevRates = { usd: null };
 
 function getIndexValue(base, range) {
   return base + (Math.random() - 0.5) * range;
@@ -136,60 +91,23 @@ function getIndexChange() {
   return (Math.random() - 0.4) * 30;
 }
 
-function animateValue(element, endValue, decimals, duration) {
-  const startValue = parseFloat(element.textContent.replace(/,/g, '')) || 0;
-  if (isNaN(startValue) || startValue === 0) {
-    element.textContent = endValue.toLocaleString('ko-KR', {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    });
-    return;
-  }
-
-  const diff = endValue - startValue;
-  const startTime = performance.now();
-
-  function step(now) {
-    const elapsed = now - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    // Ease out cubic
-    const eased = 1 - Math.pow(1 - progress, 3);
-    const current = startValue + diff * eased;
-
-    element.textContent = current.toLocaleString('ko-KR', {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    });
-
-    if (progress < 1) requestAnimationFrame(step);
-  }
-
-  requestAnimationFrame(step);
-}
-
 function updateStockRow(valueId, changeId, value, change, decimals) {
   const valEl = document.getElementById(valueId);
   const chgEl = document.getElementById(changeId);
 
-  // Animate the value count-up
-  animateValue(valEl, value, decimals, 800);
-
-  // Flash the row
-  const row = valEl.closest('.stock-row');
-  if (row) {
-    row.classList.remove('updated');
-    void row.offsetWidth;
-    row.classList.add('updated');
-  }
+  valEl.textContent = value.toLocaleString('ko-KR', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
 
   if (change > 0) {
-    chgEl.textContent = `▲ ${change.toFixed(decimals)}`;
+    chgEl.textContent = `+${change.toFixed(decimals)}`;
     chgEl.className = 'stock-change stock-up';
   } else if (change < 0) {
-    chgEl.textContent = `▼ ${Math.abs(change).toFixed(decimals)}`;
+    chgEl.textContent = change.toFixed(decimals);
     chgEl.className = 'stock-change stock-down';
   } else {
-    chgEl.textContent = '─';
+    chgEl.textContent = '--';
     chgEl.className = 'stock-change';
   }
 }
@@ -215,18 +133,18 @@ async function fetchStocksAndFX() {
     updateStockRow('usd-krw', 'usd-krw-change', krwPerUsd, diff, 2);
     prevRates.usd = krwPerUsd;
   } catch (e) {
-    // keep existing values on error
+    // keep existing
   }
 
   const now = new Date();
   document.getElementById('stocks-updated').textContent =
-    `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} 업데이트`;
+    `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 }
 
 fetchStocksAndFX();
 setInterval(fetchStocksAndFX, 30 * 60 * 1000);
 
-// ── Calendar ───────────────────────────────────────────
+// ── Calendar ─────────────────────────────────────────
 
 function renderCalendar() {
   const todayEvents = [
@@ -244,7 +162,7 @@ function renderCalendar() {
   function renderEvents(containerId, events) {
     const el = document.getElementById(containerId);
     if (events.length === 0) {
-      el.innerHTML = '<li class="calendar-empty">일정이 없습니다</li>';
+      el.innerHTML = '<li class="calendar-empty">일정 없음</li>';
       return;
     }
     el.innerHTML = events.map(e => `
@@ -260,7 +178,7 @@ function renderCalendar() {
 
 renderCalendar();
 
-// ── Next Class Countdown ──────────────────────────────
+// ── Class Countdown ──────────────────────────────────
 
 const CLASS_SCHEDULE = {
   1: [
@@ -315,7 +233,7 @@ function updateClassCountdown() {
       const endMin = timeToMinutes(c.end);
       const isActive = nowMin >= startMin && nowMin < endMin;
       return `<div class="class-today-item${isActive ? ' active' : ''}">
-        <span class="class-today-time">${c.start}–${c.end}</span>
+        <span class="class-today-time">${c.start} - ${c.end}</span>
         <span>${c.name}</span>
       </div>`;
     }).join('');
@@ -330,7 +248,7 @@ function updateClassCountdown() {
       if (nowMin >= startMin && nowMin < endMin) {
         const remaining = endMin - nowMin;
         nameEl.textContent = c.name;
-        timeEl.textContent = `진행 중`;
+        timeEl.textContent = '진행 중';
         infoEl.textContent = `${formatDuration(remaining)} 남음`;
         return;
       }
@@ -355,13 +273,13 @@ function updateClassCountdown() {
       const c = nextClasses[0];
       const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
       if (todayClasses.length > 0) {
-        nameEl.textContent = '오늘 수업 끝!';
+        nameEl.textContent = '오늘 수업 끝';
         timeEl.textContent = '';
-        infoEl.textContent = `다음: ${dayNames[nextDay]}요일 ${c.start} ${c.name}`;
+        infoEl.textContent = `${dayNames[nextDay]}요일 ${c.start} ${c.name}`;
       } else {
-        nameEl.textContent = '오늘은 수업 없음';
+        nameEl.textContent = '수업 없음';
         timeEl.textContent = '';
-        infoEl.textContent = `다음: ${dayNames[nextDay]}요일 ${c.start} ${c.name}`;
+        infoEl.textContent = `${dayNames[nextDay]}요일 ${c.start} ${c.name}`;
       }
       return;
     }
@@ -375,16 +293,7 @@ function updateClassCountdown() {
 updateClassCountdown();
 setInterval(updateClassCountdown, 30 * 1000);
 
-// ── Air Quality (circular indicators) ──────────────────
-
-const RING_CIRCUMFERENCE = 188.5; // 2 * PI * 30
-
-function setRingProgress(ringId, percentage) {
-  const ring = document.getElementById(ringId);
-  if (!ring) return;
-  const offset = RING_CIRCUMFERENCE - (percentage / 100) * RING_CIRCUMFERENCE;
-  ring.style.strokeDashoffset = offset;
-}
+// ── Air Quality (horizontal bars) ────────────────────
 
 function updateAirQuality() {
   const temp = (23 + Math.random() * 1.5).toFixed(1);
@@ -392,59 +301,55 @@ function updateAirQuality() {
   const pm25 = Math.floor(8 + Math.random() * 10);
   const pm10 = Math.floor(18 + Math.random() * 15);
 
-  document.getElementById('air-temp').textContent = `${temp}°`;
-  document.getElementById('air-humidity').textContent = `${humidity}%`;
+  document.getElementById('air-temp').textContent = temp;
+  document.getElementById('air-humidity').textContent = humidity;
   document.getElementById('air-pm25').textContent = pm25;
   document.getElementById('air-pm10').textContent = pm10;
 
-  // Circular progress: temp (15-30 range), humidity (0-100), PM (0-75/150 range)
+  // Bar fills: temp 15-30, humidity 0-100, PM2.5 0-75, PM10 0-150
   const tempPct = Math.min(100, Math.max(0, ((parseFloat(temp) - 15) / 15) * 100));
   const humidPct = Math.min(100, humidity);
   const pm25Pct = Math.min(100, (pm25 / 75) * 100);
   const pm10Pct = Math.min(100, (pm10 / 150) * 100);
 
-  setRingProgress('air-temp-ring', tempPct);
-  setRingProgress('air-humidity-ring', humidPct);
-  setRingProgress('air-pm25-ring', pm25Pct);
-  setRingProgress('air-pm10-ring', pm10Pct);
+  document.getElementById('air-temp-bar').style.width = tempPct + '%';
+  document.getElementById('air-humidity-bar').style.width = humidPct + '%';
+  document.getElementById('air-pm25-bar').style.width = pm25Pct + '%';
+  document.getElementById('air-pm10-bar').style.width = pm10Pct + '%';
 
-  // Update badges
-  function getAirStatus(val, thresholds) {
-    if (val <= thresholds[0]) return { text: '좋음', cls: 'air-good' };
-    if (val <= thresholds[1]) return { text: '보통', cls: 'air-normal' };
-    if (val <= thresholds[2]) return { text: '나쁨', cls: 'air-bad' };
-    return { text: '매우나쁨', cls: 'air-bad' };
+  function getStatus(val, thresholds) {
+    if (val <= thresholds[0]) return '좋음';
+    if (val <= thresholds[1]) return '보통';
+    if (val <= thresholds[2]) return '나쁨';
+    return '매우나쁨';
   }
 
-  const pm25Status = getAirStatus(pm25, [15, 35, 75]);
-  const pm10Status = getAirStatus(pm10, [30, 80, 150]);
-
-  const pm25Badge = document.getElementById('air-pm25-badge');
-  const pm10Badge = document.getElementById('air-pm10-badge');
-
-  pm25Badge.textContent = pm25Status.text;
-  pm25Badge.className = `air-badge ${pm25Status.cls}`;
-  pm10Badge.textContent = pm10Status.text;
-  pm10Badge.className = `air-badge ${pm10Status.cls}`;
+  document.getElementById('air-pm25-status').textContent = getStatus(pm25, [15, 35, 75]);
+  document.getElementById('air-pm10-status').textContent = getStatus(pm10, [30, 80, 150]);
 }
 
 updateAirQuality();
 setInterval(updateAirQuality, 5 * 60 * 1000);
 
-// ── Chat ───────────────────────────────────────────────
+// ── Chat ─────────────────────────────────────────────
 
 const chatMessages = document.getElementById('chat-messages');
 const chatInput = document.getElementById('chat-input');
 const chatSend = document.getElementById('chat-send');
 
 const SUNNY_RESPONSES = [
-  '좋은 하루 보내세요!',
-  '오늘도 화이팅이에요!',
+  '좋은 하루 보내세요.',
+  '오늘도 화이팅이에요.',
   '무엇이든 도와드릴게요.',
-  '잠시 후 다시 확인해 볼게요!',
-  '알겠습니다! 메모해 둘게요.',
-  '오늘 날씨가 참 좋네요.',
+  '잠시 후 다시 확인해 볼게요.',
+  '알겠습니다. 메모해 둘게요.',
 ];
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
 
 function addMessage(text, isUser) {
   const div = document.createElement('div');
@@ -452,12 +357,6 @@ function addMessage(text, isUser) {
   div.innerHTML = `<span class="message-text">${escapeHtml(text)}</span>`;
   chatMessages.appendChild(div);
   chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
 }
 
 function sendMessage() {
@@ -478,7 +377,7 @@ chatInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
 
-// ── YouTube Control ───────────────────────────────────
+// ── YouTube ──────────────────────────────────────────
 
 const ytIframe = document.getElementById('yt-iframe');
 const ytEmpty = document.getElementById('yt-empty');
@@ -522,7 +421,7 @@ function loadYouTubeVideo(url, title) {
   ytEmpty.classList.add('hidden');
 
   const displayTitle = title || url;
-  ytNowPlaying.textContent = `♪ ${displayTitle}`;
+  ytNowPlaying.textContent = displayTitle;
   ytNowPlaying.classList.add('visible');
 
   ytRecommendedEl.querySelectorAll('.yt-rec-item').forEach(item => {
@@ -545,16 +444,14 @@ function renderYtRecommended() {
 
   ytRecommendedEl.querySelectorAll('.yt-rec-item').forEach(item => {
     item.addEventListener('click', () => {
-      const id = item.dataset.id;
-      const title = item.dataset.title;
-      loadYouTubeVideo(id, title);
+      loadYouTubeVideo(item.dataset.id, item.dataset.title);
     });
   });
 }
 
 function renderYtRecent() {
   ytRecentList.innerHTML = ytRecent.map(r =>
-    `<li class="yt-recent-item" data-url="${escapeHtml(r.url)}">▶ ${escapeHtml(r.title || r.url)}</li>`
+    `<li class="yt-recent-item" data-url="${escapeHtml(r.url)}">${escapeHtml(r.title || r.url)}</li>`
   ).join('');
 
   ytRecentList.querySelectorAll('.yt-recent-item').forEach(item => {

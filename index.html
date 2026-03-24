@@ -12,131 +12,79 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Washi paper texture overlay -->
-  <div class="texture-overlay"></div>
 
   <div class="dashboard">
 
-    <!-- Row 1, Col 1: Clock -->
+    <!-- Clock -->
     <div class="widget clock-widget">
-      <div class="flip-clock" id="flip-clock">
-        <div class="flip-unit" id="hour-tens">
-          <div class="flip-card">
-            <div class="flip-card-inner" id="hour-tens-inner">
-              <div class="flip-card-front"><span>0</span></div>
-              <div class="flip-card-back"><span>0</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="flip-unit" id="hour-ones">
-          <div class="flip-card">
-            <div class="flip-card-inner" id="hour-ones-inner">
-              <div class="flip-card-front"><span>0</span></div>
-              <div class="flip-card-back"><span>0</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="flip-colon">
-          <span class="colon-dot"></span>
-          <span class="colon-dot"></span>
-        </div>
-        <div class="flip-unit" id="min-tens">
-          <div class="flip-card">
-            <div class="flip-card-inner" id="min-tens-inner">
-              <div class="flip-card-front"><span>0</span></div>
-              <div class="flip-card-back"><span>0</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="flip-unit" id="min-ones">
-          <div class="flip-card">
-            <div class="flip-card-inner" id="min-ones-inner">
-              <div class="flip-card-front"><span>0</span></div>
-              <div class="flip-card-back"><span>0</span></div>
-            </div>
-          </div>
-        </div>
+      <div class="clock-time">
+        <span class="clock-digits" id="clock-digits">00:00</span>
       </div>
-      <div class="clock-seconds-dot" id="seconds-dot"></div>
-      <div class="date-display" id="date-display"></div>
+      <div class="clock-date" id="clock-date"></div>
     </div>
 
-    <!-- Row 1, Col 2: Weather -->
+    <!-- Weather -->
     <div class="widget weather-widget">
       <div class="widget-header">
         <span class="widget-label">WEATHER</span>
         <span class="widget-rule"></span>
-        <span class="widget-title">오송</span>
       </div>
       <div class="weather-current" id="weather-current">
-        <div class="weather-icon-large" id="current-icon"></div>
-        <div class="weather-temp-large" id="current-temp">--°</div>
+        <div class="weather-temp" id="current-temp">--</div>
         <div class="weather-details">
-          <span id="current-condition">불러오는 중...</span>
+          <span class="weather-condition" id="current-condition">--</span>
           <span id="current-humidity"></span>
           <span id="current-wind"></span>
         </div>
       </div>
-      <div class="section-divider"></div>
+      <div class="section-rule"></div>
       <div class="weather-forecast" id="weather-forecast"></div>
     </div>
 
-    <!-- Row 1, Col 3: Stocks / FX -->
+    <!-- Stocks -->
     <div class="widget stocks-widget">
       <div class="widget-header">
         <span class="widget-label">MARKETS</span>
         <span class="widget-rule"></span>
-        <span class="widget-title">주식 · 환율</span>
       </div>
       <div class="stocks-list" id="stocks-list">
         <div class="stock-row">
-          <span class="stock-label">KOSPI <small>코스피</small></span>
+          <span class="stock-label">KOSPI</span>
           <span class="stock-value" id="kospi-value">--</span>
           <span class="stock-change" id="kospi-change"></span>
         </div>
         <div class="stock-row">
-          <span class="stock-label">KOSDAQ <small>코스닥</small></span>
+          <span class="stock-label">KOSDAQ</span>
           <span class="stock-value" id="kosdaq-value">--</span>
           <span class="stock-change" id="kosdaq-change"></span>
         </div>
-        <div class="stock-divider">
-          <span class="divider-dot"></span>
-          <span class="divider-line"></span>
-          <span class="divider-dot"></span>
-        </div>
         <div class="stock-row">
-          <span class="stock-label">NASDAQ <small>나스닥</small></span>
+          <span class="stock-label">NASDAQ</span>
           <span class="stock-value" id="nasdaq-value">--</span>
           <span class="stock-change" id="nasdaq-change"></span>
         </div>
-        <div class="stock-divider">
-          <span class="divider-dot"></span>
-          <span class="divider-line"></span>
-          <span class="divider-dot"></span>
-        </div>
         <div class="stock-row">
-          <span class="stock-label">USD/KRW <small>원/달러</small></span>
+          <span class="stock-label">USD/KRW</span>
           <span class="stock-value" id="usd-krw">--</span>
           <span class="stock-change" id="usd-krw-change"></span>
         </div>
       </div>
-      <div class="stocks-updated" id="stocks-updated">업데이트 중...</div>
+      <div class="widget-footer" id="stocks-updated"></div>
     </div>
 
-    <!-- Col 4, Rows 1-3: Sunny Chat (tall, right side) -->
+    <!-- Chat -->
     <div class="widget chat-widget">
       <div class="widget-header">
         <span class="widget-label">ASSISTANT</span>
         <span class="widget-rule"></span>
-        <span class="widget-title">Sunny</span>
       </div>
       <div class="chat-messages" id="chat-messages">
         <div class="chat-message bot-message">
-          <span class="message-text">안녕하세요! 무엇을 도와드릴까요?</span>
+          <span class="message-text">무엇을 도와드릴까요?</span>
         </div>
       </div>
       <div class="chat-input-area">
-        <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." autocomplete="off">
+        <input type="text" id="chat-input" placeholder="메시지 입력" autocomplete="off">
         <button id="chat-send" aria-label="Send">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -146,131 +94,107 @@
       </div>
     </div>
 
-    <!-- Row 2, Col 1: Calendar -->
+    <!-- Calendar -->
     <div class="widget calendar-widget">
       <div class="widget-header">
         <span class="widget-label">SCHEDULE</span>
         <span class="widget-rule"></span>
-        <span class="widget-title">일정</span>
       </div>
       <div class="calendar-body">
         <div class="calendar-section">
-          <div class="calendar-day-header">
-            <span class="calendar-dot"></span>
-            <span>오늘</span>
-          </div>
-          <div class="calendar-timeline">
-            <div class="timeline-line"></div>
-            <ul class="calendar-events" id="today-events"></ul>
-          </div>
+          <div class="calendar-day-header">TODAY</div>
+          <ul class="calendar-events" id="today-events"></ul>
         </div>
         <div class="calendar-section">
-          <div class="calendar-day-header">
-            <span class="calendar-dot calendar-dot-tomorrow"></span>
-            <span>내일</span>
-          </div>
-          <div class="calendar-timeline">
-            <div class="timeline-line"></div>
-            <ul class="calendar-events" id="tomorrow-events"></ul>
-          </div>
+          <div class="calendar-day-header">TOMORROW</div>
+          <ul class="calendar-events" id="tomorrow-events"></ul>
         </div>
       </div>
     </div>
 
-    <!-- Row 2, Col 2: Next Class Countdown -->
+    <!-- Next Class -->
     <div class="widget class-widget">
       <div class="widget-header">
         <span class="widget-label">LECTURE</span>
         <span class="widget-rule"></span>
-        <span class="widget-title">다음 강의</span>
       </div>
       <div class="class-countdown" id="class-countdown">
-        <div class="class-name" id="class-name">불러오는 중...</div>
+        <div class="class-name" id="class-name">--</div>
         <div class="class-time-remaining" id="class-time-remaining"></div>
         <div class="class-schedule-info" id="class-schedule-info"></div>
       </div>
-      <div class="section-divider"></div>
+      <div class="section-rule"></div>
       <div class="class-today-list" id="class-today-list"></div>
     </div>
 
-    <!-- Row 2, Col 3: Air Quality -->
+    <!-- Air Quality -->
     <div class="widget air-widget">
       <div class="widget-header">
         <span class="widget-label">ENVIRONMENT</span>
         <span class="widget-rule"></span>
-        <span class="widget-title">연구실 환경</span>
       </div>
-      <div class="air-grid" id="air-grid">
-        <div class="air-item">
-          <div class="air-circle-wrap">
-            <svg class="air-circle" viewBox="0 0 72 72">
-              <circle class="air-circle-bg" cx="36" cy="36" r="30" />
-              <circle class="air-circle-fg air-circle-temp" cx="36" cy="36" r="30" id="air-temp-ring" />
-            </svg>
-            <div class="air-circle-value" id="air-temp">23.5°</div>
-          </div>
-          <div class="air-label">실내 온도</div>
+      <div class="air-rows" id="air-rows">
+        <div class="air-row">
+          <span class="air-metric-label">TEMP</span>
+          <span class="air-metric-value" id="air-temp">23.5</span>
+          <span class="air-metric-unit">&deg;C</span>
+          <div class="air-bar-track"><div class="air-bar-fill" id="air-temp-bar"></div></div>
         </div>
-        <div class="air-item">
-          <div class="air-circle-wrap">
-            <svg class="air-circle" viewBox="0 0 72 72">
-              <circle class="air-circle-bg" cx="36" cy="36" r="30" />
-              <circle class="air-circle-fg air-circle-humidity" cx="36" cy="36" r="30" id="air-humidity-ring" />
-            </svg>
-            <div class="air-circle-value" id="air-humidity">45%</div>
-          </div>
-          <div class="air-label">습도</div>
+        <div class="air-row">
+          <span class="air-metric-label">HUMID</span>
+          <span class="air-metric-value" id="air-humidity">45</span>
+          <span class="air-metric-unit">%</span>
+          <div class="air-bar-track"><div class="air-bar-fill" id="air-humidity-bar"></div></div>
         </div>
-        <div class="air-item">
-          <div class="air-circle-wrap">
-            <svg class="air-circle" viewBox="0 0 72 72">
-              <circle class="air-circle-bg" cx="36" cy="36" r="30" />
-              <circle class="air-circle-fg air-circle-pm25" cx="36" cy="36" r="30" id="air-pm25-ring" />
-            </svg>
-            <div class="air-circle-value" id="air-pm25">12</div>
-          </div>
-          <div class="air-label">PM2.5</div>
-          <div class="air-badge air-good" id="air-pm25-badge">좋음</div>
+        <div class="air-row">
+          <span class="air-metric-label">PM2.5</span>
+          <span class="air-metric-value" id="air-pm25">12</span>
+          <span class="air-metric-unit">ug/m3</span>
+          <div class="air-bar-track"><div class="air-bar-fill" id="air-pm25-bar"></div></div>
+          <span class="air-status-text" id="air-pm25-status"></span>
         </div>
-        <div class="air-item">
-          <div class="air-circle-wrap">
-            <svg class="air-circle" viewBox="0 0 72 72">
-              <circle class="air-circle-bg" cx="36" cy="36" r="30" />
-              <circle class="air-circle-fg air-circle-pm10" cx="36" cy="36" r="30" id="air-pm10-ring" />
-            </svg>
-            <div class="air-circle-value" id="air-pm10">25</div>
-          </div>
-          <div class="air-label">PM10</div>
-          <div class="air-badge air-normal" id="air-pm10-badge">보통</div>
+        <div class="air-row">
+          <span class="air-metric-label">PM10</span>
+          <span class="air-metric-value" id="air-pm10">25</span>
+          <span class="air-metric-unit">ug/m3</span>
+          <div class="air-bar-track"><div class="air-bar-fill" id="air-pm10-bar"></div></div>
+          <span class="air-status-text" id="air-pm10-status"></span>
         </div>
       </div>
-      <div class="air-status" id="air-status">LG ThinQ 연결 대기 중</div>
+      <div class="widget-footer" id="air-status">LG ThinQ 대기</div>
     </div>
 
-    <!-- Row 3, Cols 1-3: YouTube Control -->
+    <!-- YouTube -->
     <div class="widget youtube-widget">
       <div class="widget-header">
         <span class="widget-label">MEDIA</span>
         <span class="widget-rule"></span>
-        <span class="widget-title">YouTube</span>
       </div>
       <div class="yt-player-wrap">
-        <div class="yt-player-placeholder" id="yt-player-area">
+        <div class="yt-player-area" id="yt-player-area">
           <iframe id="yt-iframe" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-          <div class="yt-empty" id="yt-empty">아래에서 영상을 선택하세요</div>
+          <div class="yt-empty" id="yt-empty">영상을 선택하세요</div>
         </div>
       </div>
       <div class="yt-now-playing" id="yt-now-playing"></div>
       <div class="yt-recommended" id="yt-recommended"></div>
       <div class="yt-controls">
-        <button class="yt-btn" id="yt-prev" title="이전">⏮</button>
-        <button class="yt-btn" id="yt-play" title="재생/일시정지">⏯</button>
-        <button class="yt-btn" id="yt-next" title="다음">⏭</button>
+        <button class="yt-btn" id="yt-prev" title="이전">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+        </button>
+        <button class="yt-btn" id="yt-play" title="재생">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="yt-btn" id="yt-next" title="다음">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+        </button>
         <input type="range" class="yt-volume" id="yt-volume" min="0" max="100" value="50" title="볼륨">
       </div>
       <div class="yt-url-area">
-        <input type="text" id="yt-url-input" placeholder="YouTube URL 붙여넣기..." autocomplete="off">
-        <button class="yt-btn" id="yt-load">↵</button>
+        <input type="text" id="yt-url-input" placeholder="YouTube URL" autocomplete="off">
+        <button class="yt-btn" id="yt-load">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
       <ul class="yt-recent" id="yt-recent"></ul>
     </div>
