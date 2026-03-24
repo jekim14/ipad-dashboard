@@ -432,8 +432,20 @@ const ytEmpty = document.getElementById('yt-empty');
 const ytUrlInput = document.getElementById('yt-url-input');
 const ytLoadBtn = document.getElementById('yt-load');
 const ytRecentList = document.getElementById('yt-recent');
+const ytNowPlaying = document.getElementById('yt-now-playing');
+const ytRecommendedEl = document.getElementById('yt-recommended');
+
+const YT_RECOMMENDED = [
+  { id: 'jfKfPfyJRdk', title: '로피 힙합 라디오 📚' },
+  { id: 'lM02vNMRRB0', title: '4K 자연 풍경 🌿' },
+  { id: 'VMAPTo7RVCo', title: '재즈 카페 음악 ☕' },
+  { id: 'mPZkdNGkNBs', title: '빗소리 백색소음 🌧️' },
+  { id: '71jHHGfbUMg', title: '클래식 피아노 🎹' },
+  { id: '3rnS5mf9NQo', title: '한국 야경 🌃' },
+];
 
 let ytRecent = JSON.parse(localStorage.getItem('yt-recent') || '[]');
+let ytCurrentId = null;
 
 function extractYouTubeId(url) {
   const patterns = [
@@ -447,24 +459,52 @@ function extractYouTubeId(url) {
   return null;
 }
 
-function loadYouTubeVideo(url) {
+function loadYouTubeVideo(url, title) {
   const id = extractYouTubeId(url);
   if (!id) return;
 
+  ytCurrentId = id;
   ytIframe.src = `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`;
   ytIframe.classList.add('visible');
   ytEmpty.classList.add('hidden');
 
+  // Update now playing
+  const displayTitle = title || url;
+  ytNowPlaying.textContent = `♪ ${displayTitle}`;
+  ytNowPlaying.classList.add('visible');
+
+  // Highlight active recommended item
+  ytRecommendedEl.querySelectorAll('.yt-rec-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.id === id);
+  });
+
   // Add to recent
-  const entry = { url, id, title: url };
+  const entry = { url, id, title: displayTitle };
   ytRecent = [entry, ...ytRecent.filter(r => r.id !== id)].slice(0, 3);
   localStorage.setItem('yt-recent', JSON.stringify(ytRecent));
   renderYtRecent();
 }
 
+function renderYtRecommended() {
+  ytRecommendedEl.innerHTML = YT_RECOMMENDED.map(v =>
+    `<div class="yt-rec-item" data-id="${v.id}" data-title="${escapeHtml(v.title)}">
+      <img class="yt-rec-thumb" src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" alt="${escapeHtml(v.title)}" loading="lazy">
+      <span class="yt-rec-title">${escapeHtml(v.title)}</span>
+    </div>`
+  ).join('');
+
+  ytRecommendedEl.querySelectorAll('.yt-rec-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const id = item.dataset.id;
+      const title = item.dataset.title;
+      loadYouTubeVideo(id, title);
+    });
+  });
+}
+
 function renderYtRecent() {
   ytRecentList.innerHTML = ytRecent.map(r =>
-    `<li class="yt-recent-item" data-url="${escapeHtml(r.url)}">▶ ${escapeHtml(r.url)}</li>`
+    `<li class="yt-recent-item" data-url="${escapeHtml(r.url)}">▶ ${escapeHtml(r.title || r.url)}</li>`
   ).join('');
 
   ytRecentList.querySelectorAll('.yt-recent-item').forEach(item => {
@@ -488,4 +528,5 @@ ytUrlInput.addEventListener('keydown', (e) => {
   }
 });
 
+renderYtRecommended();
 renderYtRecent();
