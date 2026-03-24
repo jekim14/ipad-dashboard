@@ -69,7 +69,7 @@
       </div>
     </div>
 
-    <!-- Class Countdown (tall left) -->
+    <!-- Class Countdown -->
     <div class="widget class-widget">
       <div class="widget-header">
         <span class="widget-label">LECTURE</span>
@@ -82,11 +82,15 @@
       </div>
       <div class="section-rule"></div>
       <div class="class-today-list" id="class-today-list"></div>
-      <div class="section-rule"></div>
-      <div class="class-events-section">
-        <div class="class-events-header">TODAY</div>
-        <ul class="class-events-list" id="today-events"></ul>
+    </div>
+
+    <!-- Calendar (separate) -->
+    <div class="widget calendar-widget">
+      <div class="widget-header">
+        <span class="widget-label">TODAY</span>
+        <span class="widget-rule"></span>
       </div>
+      <ul class="calendar-events-list" id="today-events"></ul>
     </div>
 
     <!-- Stocks -->
@@ -120,42 +124,38 @@
       <div class="widget-footer" id="stocks-updated"></div>
     </div>
 
-    <!-- Air Quality -->
+    <!-- Air Quality (Design D: Minimal Grid) -->
     <div class="widget air-widget">
       <div class="widget-header">
         <span class="widget-label">INDOOR AIR</span>
         <span class="widget-rule"></span>
       </div>
-      <div class="air-circle-area">
-        <div class="air-circle" id="air-circle">
-          <span class="air-circle-text" id="air-circle-text">좋음</span>
+      <div class="air-status-row">
+        <div class="air-dot" id="air-dot"></div>
+        <span class="air-status-text" id="air-status-text">좋음</span>
+        <span class="air-status-aqi" id="air-aqi">AQI 32</span>
+      </div>
+      <div class="air-grid">
+        <div class="air-cell">
+          <span class="air-cell-label">PM2.5</span>
+          <span class="air-cell-val"><span id="air-pm25">12</span> <span class="air-cell-unit">µg/m³</span></span>
+          <span class="air-cell-sub" id="air-pm25-status">좋음</span>
+        </div>
+        <div class="air-cell">
+          <span class="air-cell-label">PM10</span>
+          <span class="air-cell-val"><span id="air-pm10">25</span> <span class="air-cell-unit">µg/m³</span></span>
+          <span class="air-cell-sub" id="air-pm10-status">보통</span>
+        </div>
+        <div class="air-cell">
+          <span class="air-cell-label">온도</span>
+          <span class="air-cell-val"><span id="air-temp">23</span>°C</span>
+        </div>
+        <div class="air-cell">
+          <span class="air-cell-label">습도</span>
+          <span class="air-cell-val"><span id="air-humidity">45</span>%</span>
         </div>
       </div>
-      <div class="air-readings">
-        <div class="air-col">
-          <span class="air-col-value" id="air-temp">23.5</span>
-          <span class="air-col-unit">&deg;C</span>
-          <span class="air-col-label">온도</span>
-        </div>
-        <div class="air-col">
-          <span class="air-col-value" id="air-humidity">45</span>
-          <span class="air-col-unit">%</span>
-          <span class="air-col-label">습도</span>
-        </div>
-      </div>
-      <div class="section-rule"></div>
-      <div class="air-pm-row">
-        <div class="air-pm-item">
-          <span class="air-pm-label">PM2.5</span>
-          <span class="air-pm-value" id="air-pm25">12</span>
-          <span class="air-pm-status" id="air-pm25-status">좋음</span>
-        </div>
-        <div class="air-pm-item">
-          <span class="air-pm-label">PM10</span>
-          <span class="air-pm-value" id="air-pm10">25</span>
-          <span class="air-pm-status" id="air-pm10-status">보통</span>
-        </div>
-      </div>
+      <div class="air-footer" id="air-updated">오송 · --:-- 업데이트</div>
     </div>
 
     <!-- YouTube -->

@@ -295,7 +295,7 @@ function updateClassCountdown() {
 updateClassCountdown();
 setInterval(updateClassCountdown, 30 * 1000);
 
-// ── Air Quality (circle-based) ───────────────────────
+// ── Air Quality (Design D: Minimal Grid) ─────────────
 
 function getAirStatus(val, thresholds) {
   if (val <= thresholds[0]) return { text: '좋음', level: 1 };
@@ -323,10 +323,23 @@ function updateAirQuality() {
 
   const worstLevel = Math.max(pm25St.level, pm10St.level);
   const overallTexts = ['좋음', '보통', '나쁨', '매우나쁨'];
-  const circle = document.getElementById('air-circle');
-  const circleText = document.getElementById('air-circle-text');
-  circleText.textContent = overallTexts[worstLevel - 1];
-  circle.setAttribute('data-level', worstLevel);
+
+  const dot = document.getElementById('air-dot');
+  const statusText = document.getElementById('air-status-text');
+  const aqiEl = document.getElementById('air-aqi');
+
+  statusText.textContent = overallTexts[worstLevel - 1];
+  dot.setAttribute('data-level', worstLevel);
+
+  // Simple AQI approximation from PM2.5
+  const aqi = Math.round(pm25 * 2.1 + 5);
+  aqiEl.textContent = `AQI ${aqi}`;
+
+  // Update timestamp
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('air-updated').textContent = `오송 · ${hh}:${mm} 업데이트`;
 }
 
 updateAirQuality();
