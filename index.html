@@ -15,7 +15,7 @@
 
   <div class="dashboard">
 
-    <!-- Clock (Flip) -->
+    <!-- Clock -->
     <div class="widget clock-widget">
       <div class="flip-clock" id="flip-clock">
         <div class="flip-digit" id="h0"><div class="flip-card"><span>0</span></div></div>
@@ -33,16 +33,60 @@
         <span class="widget-label">WEATHER</span>
         <span class="widget-rule"></span>
       </div>
-      <div class="weather-current" id="weather-current">
-        <div class="weather-temp" id="current-temp">--</div>
-        <div class="weather-details">
-          <span class="weather-condition" id="current-condition">--</span>
-          <span id="current-humidity"></span>
-          <span id="current-wind"></span>
+      <div class="weather-layout">
+        <div class="weather-current" id="weather-current">
+          <div class="weather-temp" id="current-temp">--</div>
+          <div class="weather-details">
+            <span class="weather-condition" id="current-condition">--</span>
+            <span id="current-humidity"></span>
+            <span id="current-wind"></span>
+          </div>
+        </div>
+        <div class="weather-divider"></div>
+        <div class="weather-forecast" id="weather-forecast"></div>
+      </div>
+    </div>
+
+    <!-- Chat -->
+    <div class="widget chat-widget">
+      <div class="widget-header">
+        <span class="widget-label">ASSISTANT</span>
+        <span class="widget-rule"></span>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-message bot-message">
+          <span class="message-text">무엇을 도와드릴까요?</span>
         </div>
       </div>
+      <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="메시지 입력" autocomplete="off">
+        <button id="chat-send" aria-label="Send">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Class Countdown (tall left) -->
+    <div class="widget class-widget">
+      <div class="widget-header">
+        <span class="widget-label">LECTURE</span>
+        <span class="widget-rule"></span>
+      </div>
+      <div class="class-countdown" id="class-countdown">
+        <div class="class-name" id="class-name">--</div>
+        <div class="class-time-remaining" id="class-time-remaining"></div>
+        <div class="class-schedule-info" id="class-schedule-info"></div>
+      </div>
       <div class="section-rule"></div>
-      <div class="weather-forecast" id="weather-forecast"></div>
+      <div class="class-today-list" id="class-today-list"></div>
+      <div class="section-rule"></div>
+      <div class="class-events-section">
+        <div class="class-events-header">TODAY</div>
+        <ul class="class-events-list" id="today-events"></ul>
+      </div>
     </div>
 
     <!-- Stocks -->
@@ -76,7 +120,45 @@
       <div class="widget-footer" id="stocks-updated"></div>
     </div>
 
-    <!-- YouTube (right, 2 rows tall) -->
+    <!-- Air Quality -->
+    <div class="widget air-widget">
+      <div class="widget-header">
+        <span class="widget-label">INDOOR AIR</span>
+        <span class="widget-rule"></span>
+      </div>
+      <div class="air-circle-area">
+        <div class="air-circle" id="air-circle">
+          <span class="air-circle-text" id="air-circle-text">좋음</span>
+        </div>
+      </div>
+      <div class="air-readings">
+        <div class="air-col">
+          <span class="air-col-value" id="air-temp">23.5</span>
+          <span class="air-col-unit">&deg;C</span>
+          <span class="air-col-label">온도</span>
+        </div>
+        <div class="air-col">
+          <span class="air-col-value" id="air-humidity">45</span>
+          <span class="air-col-unit">%</span>
+          <span class="air-col-label">습도</span>
+        </div>
+      </div>
+      <div class="section-rule"></div>
+      <div class="air-pm-row">
+        <div class="air-pm-item">
+          <span class="air-pm-label">PM2.5</span>
+          <span class="air-pm-value" id="air-pm25">12</span>
+          <span class="air-pm-status" id="air-pm25-status">좋음</span>
+        </div>
+        <div class="air-pm-item">
+          <span class="air-pm-label">PM10</span>
+          <span class="air-pm-value" id="air-pm10">25</span>
+          <span class="air-pm-status" id="air-pm10-status">보통</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- YouTube -->
     <div class="widget youtube-widget">
       <div class="widget-header">
         <span class="widget-label">MEDIA</span>
@@ -94,105 +176,6 @@
         <input type="text" id="yt-url-input" placeholder="YouTube URL" autocomplete="off">
         <button class="yt-btn" id="yt-load">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Calendar -->
-    <div class="widget calendar-widget">
-      <div class="widget-header">
-        <span class="widget-label">SCHEDULE</span>
-        <span class="widget-rule"></span>
-      </div>
-      <div class="calendar-body">
-        <div class="calendar-section">
-          <div class="calendar-day-header">TODAY</div>
-          <ul class="calendar-events" id="today-events"></ul>
-        </div>
-        <div class="calendar-section">
-          <div class="calendar-day-header">TOMORROW</div>
-          <ul class="calendar-events" id="tomorrow-events"></ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- Next Class -->
-    <div class="widget class-widget">
-      <div class="widget-header">
-        <span class="widget-label">LECTURE</span>
-        <span class="widget-rule"></span>
-      </div>
-      <div class="class-countdown" id="class-countdown">
-        <div class="class-name" id="class-name">--</div>
-        <div class="class-time-remaining" id="class-time-remaining"></div>
-        <div class="class-schedule-info" id="class-schedule-info"></div>
-      </div>
-      <div class="section-rule"></div>
-      <div class="class-today-list" id="class-today-list"></div>
-    </div>
-
-    <!-- Air Quality (redesigned) -->
-    <div class="widget air-widget">
-      <div class="widget-header">
-        <span class="widget-label">ENVIRONMENT</span>
-        <span class="widget-rule"></span>
-      </div>
-      <div class="air-overall" id="air-overall">
-        <span class="air-overall-label">실내 공기:</span>
-        <span class="air-overall-status" id="air-overall-status">좋음</span>
-      </div>
-      <div class="section-rule"></div>
-      <div class="air-rows" id="air-rows">
-        <div class="air-row">
-          <span class="air-metric-label">온도</span>
-          <span class="air-metric-value" id="air-temp">23.5</span>
-          <span class="air-metric-unit">&deg;C</span>
-          <span class="air-status-text" id="air-temp-status">적정</span>
-          <span class="air-dots" id="air-temp-dots"></span>
-        </div>
-        <div class="air-row">
-          <span class="air-metric-label">습도</span>
-          <span class="air-metric-value" id="air-humidity">45</span>
-          <span class="air-metric-unit">%</span>
-          <span class="air-status-text" id="air-humidity-status">적정</span>
-          <span class="air-dots" id="air-humidity-dots"></span>
-        </div>
-        <div class="air-row">
-          <span class="air-metric-label">PM2.5</span>
-          <span class="air-metric-value" id="air-pm25">12</span>
-          <span class="air-metric-unit">ug/m3</span>
-          <span class="air-status-text" id="air-pm25-status">좋음</span>
-          <span class="air-dots" id="air-pm25-dots"></span>
-        </div>
-        <div class="air-row">
-          <span class="air-metric-label">PM10</span>
-          <span class="air-metric-value" id="air-pm10">25</span>
-          <span class="air-metric-unit">ug/m3</span>
-          <span class="air-status-text" id="air-pm10-status">좋음</span>
-          <span class="air-dots" id="air-pm10-dots"></span>
-        </div>
-      </div>
-      <div class="widget-footer" id="air-status">LG ThinQ 대기</div>
-    </div>
-
-    <!-- Chat (wide bottom) -->
-    <div class="widget chat-widget">
-      <div class="widget-header">
-        <span class="widget-label">ASSISTANT</span>
-        <span class="widget-rule"></span>
-      </div>
-      <div class="chat-messages" id="chat-messages">
-        <div class="chat-message bot-message">
-          <span class="message-text">무엇을 도와드릴까요?</span>
-        </div>
-      </div>
-      <div class="chat-input-area">
-        <input type="text" id="chat-input" placeholder="메시지 입력" autocomplete="off">
-        <button id="chat-send" aria-label="Send">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-          </svg>
         </button>
       </div>
     </div>

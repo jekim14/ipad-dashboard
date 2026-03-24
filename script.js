@@ -16,18 +16,17 @@ function updateFlipClock() {
     if (prevDigits[i] !== d) {
       span.textContent = d;
       el.classList.add('flipping');
-      setTimeout(() => el.classList.remove('flipping'), 400);
+      setTimeout(() => el.classList.remove('flipping'), 600);
     }
   });
 
   prevDigits = digits;
 
-  const year = now.getFullYear();
   const month = now.getMonth() + 1;
   const day = now.getDate();
   const dayName = KOREAN_DAYS[now.getDay()];
   document.getElementById('clock-date').textContent =
-    `${year}년 ${month}월 ${day}일 ${dayName}`;
+    `${month}월 ${day}일 ${dayName}`;
 }
 
 updateFlipClock();
@@ -157,9 +156,9 @@ async function fetchStocksAndFX() {
 fetchStocksAndFX();
 setInterval(fetchStocksAndFX, 30 * 60 * 1000);
 
-// ── Calendar ─────────────────────────────────────────
+// ── Calendar Events (merged into class widget) ───────
 
-function renderCalendar() {
+function renderCalendarEvents() {
   const todayEvents = [
     { time: '09:00', title: '팀 스탠드업 미팅' },
     { time: '11:00', title: '프로젝트 리뷰' },
@@ -167,29 +166,19 @@ function renderCalendar() {
     { time: '16:30', title: '코드 리뷰' },
   ];
 
-  const tomorrowEvents = [
-    { time: '10:00', title: '주간 회의' },
-    { time: '13:00', title: '디자인 검토' },
-  ];
-
-  function renderEvents(containerId, events) {
-    const el = document.getElementById(containerId);
-    if (events.length === 0) {
-      el.innerHTML = '<li class="calendar-empty">일정 없음</li>';
-      return;
-    }
-    el.innerHTML = events.map(e => `
-      <li class="calendar-event">
-        <span class="event-time">${e.time}</span>
-        <span class="event-title">${e.title}</span>
-      </li>`).join('');
+  const el = document.getElementById('today-events');
+  if (todayEvents.length === 0) {
+    el.innerHTML = '<li class="calendar-empty">일정 없음</li>';
+    return;
   }
-
-  renderEvents('today-events', todayEvents);
-  renderEvents('tomorrow-events', tomorrowEvents);
+  el.innerHTML = todayEvents.map(e => `
+    <li class="calendar-event">
+      <span class="event-time">${e.time}</span>
+      <span class="event-title">${e.title}</span>
+    </li>`).join('');
 }
 
-renderCalendar();
+renderCalendarEvents();
 
 // ── Class Countdown ──────────────────────────────────
 
@@ -306,33 +295,13 @@ function updateClassCountdown() {
 updateClassCountdown();
 setInterval(updateClassCountdown, 30 * 1000);
 
-// ── Air Quality (status-focused) ────────────────────
+// ── Air Quality (circle-based) ───────────────────────
 
 function getAirStatus(val, thresholds) {
   if (val <= thresholds[0]) return { text: '좋음', level: 1 };
   if (val <= thresholds[1]) return { text: '보통', level: 2 };
   if (val <= thresholds[2]) return { text: '나쁨', level: 3 };
   return { text: '매우나쁨', level: 4 };
-}
-
-function getTempStatus(val) {
-  if (val >= 18 && val <= 26) return { text: '적정', level: 1 };
-  if (val >= 15 && val <= 28) return { text: '보통', level: 2 };
-  return { text: '나쁨', level: 3 };
-}
-
-function getHumidityStatus(val) {
-  if (val >= 40 && val <= 60) return { text: '적정', level: 1 };
-  if (val >= 30 && val <= 70) return { text: '보통', level: 2 };
-  return { text: '나쁨', level: 3 };
-}
-
-function renderDots(level, maxLevel) {
-  let dots = '';
-  for (let i = 0; i < maxLevel; i++) {
-    dots += i < level ? '\u25CF ' : '\u25CB ';
-  }
-  return dots.trim();
 }
 
 function updateAirQuality() {
@@ -346,25 +315,18 @@ function updateAirQuality() {
   document.getElementById('air-pm25').textContent = pm25;
   document.getElementById('air-pm10').textContent = pm10;
 
-  const tempSt = getTempStatus(parseFloat(temp));
-  const humSt = getHumidityStatus(humidity);
   const pm25St = getAirStatus(pm25, [15, 35, 75]);
   const pm10St = getAirStatus(pm10, [30, 80, 150]);
 
-  document.getElementById('air-temp-status').textContent = tempSt.text;
-  document.getElementById('air-humidity-status').textContent = humSt.text;
   document.getElementById('air-pm25-status').textContent = pm25St.text;
   document.getElementById('air-pm10-status').textContent = pm10St.text;
 
-  document.getElementById('air-temp-dots').textContent = renderDots(tempSt.level, 4);
-  document.getElementById('air-humidity-dots').textContent = renderDots(humSt.level, 4);
-  document.getElementById('air-pm25-dots').textContent = renderDots(pm25St.level, 4);
-  document.getElementById('air-pm10-dots').textContent = renderDots(pm10St.level, 4);
-
-  // Overall status: worst of PM2.5 and PM10
   const worstLevel = Math.max(pm25St.level, pm10St.level);
   const overallTexts = ['좋음', '보통', '나쁨', '매우나쁨'];
-  document.getElementById('air-overall-status').textContent = overallTexts[worstLevel - 1];
+  const circle = document.getElementById('air-circle');
+  const circleText = document.getElementById('air-circle-text');
+  circleText.textContent = overallTexts[worstLevel - 1];
+  circle.setAttribute('data-level', worstLevel);
 }
 
 updateAirQuality();
@@ -463,7 +425,6 @@ function loadYouTubeVideo(url, title) {
 
 function loadChannelLatest(channelId, channelName) {
   ytActiveChannel = channelId;
-  // Load channel's live/latest via embed
   ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(channelId)}&autoplay=1`;
   ytIframe.classList.add('visible');
   ytEmpty.classList.add('hidden');
@@ -478,7 +439,7 @@ function renderChannelList() {
   ytChannelsEl.innerHTML = YT_CHANNELS.map(ch => {
     const isActive = ytActiveChannel === ch.id;
     return `<div class="yt-channel-item${isActive ? ' active' : ''}" data-id="${ch.id}" data-name="${escapeHtml(ch.name)}">
-      <span class="yt-ch-marker">${isActive ? '\u25B6' : '\u2013'}</span>
+      <span class="yt-ch-marker">${isActive ? '\u25B8' : '\u2013'}</span>
       <span>${escapeHtml(ch.name)}</span>
     </div>`;
   }).join('');

@@ -10,18 +10,12 @@
   --paper: #F5F3EF;
   --surface: #FAFAF8;
   --ink: #1A1A1A;
-  --ink-mid: #6A6A6A;
   --ink-light: #A0A0A0;
   --rule: #D0D0D0;
   --rule-light: #E0E0E0;
   --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
-  --sp-1: 4px;
-  --sp-2: 8px;
-  --sp-3: 12px;
-  --sp-4: 16px;
-  --sp-6: 24px;
 }
 
 html, body {
@@ -34,15 +28,15 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Grid ──────────────────────────────────────────── */
+/* ── Grid: content-driven sizing ──────────────────── */
 .dashboard {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1.3fr;
-  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 200px 1fr 1fr 280px;
+  grid-template-rows: 120px 1fr 1fr;
   grid-template-areas:
-    "clock   weather  stocks  youtube"
-    "calendar class   air     youtube"
-    "chat    chat     chat    chat";
+    "clock   weather  weather  chat"
+    "class   stocks   air      chat"
+    "class   youtube  youtube  chat";
   height: 100vh;
   height: 100dvh;
   gap: 1px;
@@ -51,17 +45,16 @@ html, body {
 
 .clock-widget    { grid-area: clock; }
 .weather-widget  { grid-area: weather; }
-.stocks-widget   { grid-area: stocks; }
-.youtube-widget  { grid-area: youtube; }
-.calendar-widget { grid-area: calendar; }
-.class-widget    { grid-area: class; }
-.air-widget      { grid-area: air; }
 .chat-widget     { grid-area: chat; }
+.class-widget    { grid-area: class; }
+.stocks-widget   { grid-area: stocks; }
+.air-widget      { grid-area: air; }
+.youtube-widget  { grid-area: youtube; }
 
 /* ── Widget Base ───────────────────────────────────── */
 .widget {
   background: var(--paper);
-  padding: var(--sp-4);
+  padding: 16px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -71,14 +64,14 @@ html, body {
 .widget-header {
   display: flex;
   align-items: center;
-  gap: var(--sp-2);
-  margin-bottom: var(--sp-3);
+  gap: 8px;
+  margin-bottom: 8px;
   flex-shrink: 0;
 }
 
 .widget-label {
   font-family: var(--font-sans);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -98,21 +91,21 @@ html, body {
   color: var(--ink-light);
   text-align: right;
   flex-shrink: 0;
-  margin-top: var(--sp-2);
+  margin-top: 8px;
 }
 
 .section-rule {
   height: 1px;
   background: var(--rule-light);
-  margin: var(--sp-2) 0;
+  margin: 8px 0;
   flex-shrink: 0;
 }
 
 /* ── Flip Clock ───────────────────────────────────── */
 .clock-widget {
   justify-content: center;
-  align-items: flex-start;
-  padding: var(--sp-3) var(--sp-4);
+  align-items: center;
+  padding: 8px 16px;
 }
 
 .flip-clock {
@@ -123,8 +116,8 @@ html, body {
 
 .flip-digit {
   position: relative;
-  width: 36px;
-  height: 52px;
+  width: 40px;
+  height: 56px;
   perspective: 200px;
 }
 
@@ -132,7 +125,7 @@ html, body {
   width: 100%;
   height: 100%;
   border: 1px solid var(--rule);
-  background: var(--paper);
+  background: var(--surface);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -170,12 +163,12 @@ html, body {
 }
 
 .flip-digit.flipping .flip-card {
-  animation: flipDown 0.4s ease-in-out;
+  animation: flipDown 0.6s ease-in-out;
 }
 
 @keyframes flipDown {
   0% { transform: rotateX(0deg); }
-  50% { transform: rotateX(-8deg); }
+  50% { transform: rotateX(-90deg); }
   100% { transform: rotateX(0deg); }
 }
 
@@ -183,21 +176,30 @@ html, body {
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 300;
-  color: var(--ink-mid);
-  margin-top: var(--sp-2);
+  color: var(--ink-light);
+  margin-top: 8px;
   letter-spacing: 0.04em;
+  text-align: center;
 }
 
-/* ── Weather ───────────────────────────────────────── */
+/* ── Weather (wide, 2 cols) ───────────────────────── */
 .weather-widget {
-  gap: var(--sp-2);
+  padding: 16px;
+}
+
+.weather-layout {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 0;
 }
 
 .weather-current {
   display: flex;
   align-items: baseline;
-  gap: var(--sp-4);
-  flex: 1;
+  gap: 16px;
+  flex-shrink: 0;
 }
 
 .weather-temp {
@@ -214,7 +216,7 @@ html, body {
   gap: 2px;
   font-size: 11px;
   font-weight: 300;
-  color: var(--ink-mid);
+  color: var(--ink-light);
 }
 
 .weather-condition {
@@ -222,16 +224,23 @@ html, body {
   color: var(--ink);
 }
 
+.weather-divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--rule-light);
+  flex-shrink: 0;
+}
+
 .weather-forecast {
   display: flex;
+  flex: 1;
   gap: 0;
-  flex-shrink: 0;
 }
 
 .forecast-day {
   flex: 1;
   text-align: left;
-  padding: var(--sp-1) var(--sp-2);
+  padding: 4px 8px;
 }
 
 .forecast-day + .forecast-day {
@@ -251,7 +260,7 @@ html, body {
 
 .forecast-desc {
   font-size: 11px;
-  color: var(--ink-mid);
+  color: var(--ink-light);
   font-weight: 300;
   display: block;
   margin-bottom: 2px;
@@ -276,7 +285,7 @@ html, body {
 
 /* ── Stocks ────────────────────────────────────────── */
 .stocks-widget {
-  gap: var(--sp-2);
+  gap: 8px;
 }
 
 .stocks-list {
@@ -284,14 +293,14 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: var(--sp-2);
+  gap: 8px;
 }
 
 .stock-row {
   display: flex;
   align-items: baseline;
-  gap: var(--sp-2);
-  padding: var(--sp-1) 0;
+  gap: 8px;
+  padding: 4px 0;
   border-bottom: 1px solid var(--rule-light);
 }
 
@@ -303,7 +312,7 @@ html, body {
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 500;
-  color: var(--ink-mid);
+  color: var(--ink-light);
   min-width: 64px;
   letter-spacing: 0.04em;
 }
@@ -319,7 +328,7 @@ html, body {
 .stock-change {
   font-family: var(--font-mono);
   font-size: 10px;
-  color: var(--ink-mid);
+  color: var(--ink-light);
   letter-spacing: -0.01em;
 }
 
@@ -332,36 +341,94 @@ html, body {
   color: var(--ink-light);
 }
 
-/* ── Calendar ──────────────────────────────────────── */
-.calendar-widget {
-  gap: 0;
+/* ── Class Countdown (tall left) ──────────────────── */
+.class-widget {
+  gap: 8px;
 }
 
-.calendar-body {
+.class-countdown {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.class-name {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.class-time-remaining {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.class-schedule-info {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 300;
+  color: var(--ink-light);
+  letter-spacing: 0.02em;
+}
+
+.class-today-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+.class-today-item {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 300;
+  color: var(--ink-light);
+  display: flex;
+  gap: 8px;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--rule-light);
+}
+
+.class-today-item:last-child {
+  border-bottom: none;
+}
+
+.class-today-item.active {
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.class-today-time {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  min-width: 72px;
+  white-space: nowrap;
+}
+
+/* Class events (merged from calendar) */
+.class-events-section {
   flex: 1;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-3);
+  min-height: 0;
 }
 
-.calendar-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-1);
-}
-
-.calendar-day-header {
+.class-events-header {
   font-family: var(--font-sans);
   font-size: 9px;
   font-weight: 500;
   color: var(--ink-light);
   letter-spacing: 0.16em;
-  padding-bottom: var(--sp-1);
+  padding-bottom: 4px;
   border-bottom: 1px solid var(--rule-light);
 }
 
-.calendar-events {
+.class-events-list {
   list-style: none;
   display: flex;
   flex-direction: column;
@@ -371,8 +438,8 @@ html, body {
 .calendar-event {
   display: flex;
   align-items: baseline;
-  gap: var(--sp-2);
-  padding: var(--sp-1) 0;
+  gap: 8px;
+  padding: 4px 0;
   border-bottom: 1px solid var(--rule-light);
 }
 
@@ -399,210 +466,149 @@ html, body {
 .calendar-empty {
   font-size: 11px;
   color: var(--ink-light);
-  padding: var(--sp-1) 0;
+  padding: 4px 0;
   font-weight: 300;
 }
 
-/* ── Class Countdown ───────────────────────────────── */
-.class-widget {
-  gap: var(--sp-2);
+/* ── Air Quality — Circle-based ──────────────────── */
+.air-widget {
+  gap: 8px;
+  align-items: center;
 }
 
-.class-countdown {
+.air-circle-area {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: var(--sp-1);
+  min-height: 0;
 }
 
-.class-name {
-  font-family: var(--font-serif);
+.air-circle {
+  width: 80px;
+  height: 80px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.air-circle-text {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.air-circle[data-level="1"] { border-width: 1px; }
+.air-circle[data-level="2"] { border-width: 2px; }
+.air-circle[data-level="3"] { border-width: 3px; }
+.air-circle[data-level="4"] { border-width: 4px; }
+
+.air-readings {
+  display: flex;
+  gap: 24px;
+  flex-shrink: 0;
+  width: 100%;
+  justify-content: center;
+}
+
+.air-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.air-col-value {
+  font-family: var(--font-mono);
   font-size: 18px;
   font-weight: 400;
-  line-height: 1.3;
-}
-
-.class-time-remaining {
-  font-family: var(--font-mono);
-  font-size: 28px;
-  font-weight: 300;
   color: var(--ink);
-  line-height: 1;
-  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
-.class-schedule-info {
-  font-family: var(--font-sans);
+.air-col-unit {
+  font-family: var(--font-mono);
   font-size: 10px;
+  color: var(--ink-light);
   font-weight: 300;
-  color: var(--ink-mid);
-  letter-spacing: 0.02em;
+  margin-left: 2px;
+  display: inline;
 }
 
-.class-today-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  flex-shrink: 0;
-  max-height: 80px;
-  overflow-y: auto;
-}
-
-.class-today-item {
+.air-col-label {
   font-family: var(--font-sans);
   font-size: 10px;
   font-weight: 300;
   color: var(--ink-light);
+}
+
+.air-pm-row {
   display: flex;
-  gap: var(--sp-2);
-  padding: 2px 0;
-  border-bottom: 1px solid var(--rule-light);
-}
-
-.class-today-item:last-child {
-  border-bottom: none;
-}
-
-.class-today-item.active {
-  color: var(--ink);
-  font-weight: 400;
-}
-
-.class-today-time {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  min-width: 72px;
-  white-space: nowrap;
-}
-
-/* ── Air Quality — Status-focused ─────────────────── */
-.air-widget {
-  gap: var(--sp-2);
-}
-
-.air-overall {
-  display: flex;
-  align-items: baseline;
-  gap: var(--sp-2);
+  gap: 16px;
   flex-shrink: 0;
-}
-
-.air-overall-label {
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--ink-mid);
-}
-
-.air-overall-status {
-  font-family: var(--font-sans);
-  font-size: 20px;
-  font-weight: 500;
-  color: var(--ink);
-  letter-spacing: 0.02em;
-}
-
-.air-rows {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  width: 100%;
   justify-content: center;
-  gap: var(--sp-2);
 }
 
-.air-row {
-  display: grid;
-  grid-template-columns: 40px 44px 40px 1fr auto;
+.air-pm-item {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--sp-2);
-  padding: var(--sp-1) 0;
-  border-bottom: 1px solid var(--rule-light);
+  gap: 0;
 }
 
-.air-row:last-child {
-  border-bottom: none;
-}
-
-.air-metric-label {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--ink-mid);
-}
-
-.air-metric-value {
-  font-family: var(--font-mono);
-  font-size: 15px;
-  font-weight: 400;
-  color: var(--ink);
-  text-align: right;
-}
-
-.air-metric-unit {
+.air-pm-label {
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--ink-light);
-  font-weight: 300;
-}
-
-.air-status-text {
-  font-family: var(--font-sans);
-  font-size: 14px;
   font-weight: 500;
-  color: var(--ink);
-  white-space: nowrap;
-  text-align: right;
-  min-width: 48px;
+  color: var(--ink-light);
+  letter-spacing: 0.04em;
 }
 
-.air-dots {
+.air-pm-value {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 16px;
+  font-weight: 400;
   color: var(--ink);
-  letter-spacing: 2px;
-  white-space: nowrap;
 }
 
-/* ── Chat (wide bottom) ──────────────────────────────── */
+.air-pm-status {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--ink-light);
+}
+
+/* ── Chat (right column, full height) ─────────────── */
 .chat-widget {
   gap: 0;
-  flex-direction: row;
-  padding: var(--sp-2) var(--sp-4);
-  align-items: stretch;
-}
-
-.chat-widget .widget-header {
-  display: none;
 }
 
 .chat-messages {
   flex: 1;
   overflow-y: auto;
   display: flex;
-  flex-direction: row;
-  gap: var(--sp-3);
-  padding: var(--sp-1) 0;
-  align-items: flex-end;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
 }
 
 .chat-message {
-  max-width: 320px;
-  padding: var(--sp-2) var(--sp-3);
+  padding: 8px 0;
   font-size: 12px;
   font-weight: 300;
   line-height: 1.6;
-  flex-shrink: 0;
 }
 
 .bot-message {
-  align-self: flex-end;
   border-bottom: 1px solid var(--rule-light);
 }
 
 .user-message {
-  align-self: flex-end;
-  color: var(--ink-mid);
+  color: var(--ink-light);
 }
 
 .message-text {
@@ -611,17 +617,15 @@ html, body {
 
 .chat-input-area {
   display: flex;
-  gap: var(--sp-2);
-  padding-left: var(--sp-3);
-  border-left: 1px solid var(--rule);
+  gap: 8px;
   flex-shrink: 0;
-  align-items: center;
-  min-width: 280px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rule-light);
 }
 
 #chat-input {
   flex: 1;
-  padding: var(--sp-2) var(--sp-3);
+  padding: 8px;
   border: 1px solid var(--rule);
   background: var(--paper);
   font-family: var(--font-sans);
@@ -637,7 +641,7 @@ html, body {
 }
 
 #chat-input:focus {
-  border-color: var(--ink-mid);
+  border-color: var(--ink);
 }
 
 #chat-send {
@@ -654,23 +658,23 @@ html, body {
 }
 
 #chat-send:hover {
-  border-color: var(--ink-mid);
+  border-color: var(--ink);
 }
 
-/* ── YouTube (vertical, 2 rows) ───────────────────── */
+/* ── YouTube (wide bottom) ────────────────────────── */
 .youtube-widget {
-  gap: var(--sp-2);
-  padding: var(--sp-3) var(--sp-4);
+  gap: 8px;
+  padding: 8px 16px;
 }
 
 .yt-player-wrap {
-  flex: 1;
-  min-height: 0;
+  width: 100%;
+  flex-shrink: 0;
 }
 
 .yt-player-area {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 16 / 9;
   border: 1px solid var(--rule);
   background: var(--paper);
   position: relative;
@@ -727,22 +731,22 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 0;
-  flex-shrink: 0;
+  flex: 1;
   overflow-y: auto;
-  max-height: 140px;
+  min-height: 0;
 }
 
 .yt-channel-item {
   font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 300;
-  color: var(--ink-mid);
+  color: var(--ink-light);
   cursor: pointer;
-  padding: var(--sp-1) var(--sp-2);
+  padding: 4px 8px;
   border-bottom: 1px solid var(--rule-light);
   display: flex;
   align-items: center;
-  gap: var(--sp-2);
+  gap: 8px;
 }
 
 .yt-channel-item:last-child {
@@ -770,13 +774,13 @@ html, body {
 
 .yt-url-area {
   display: flex;
-  gap: var(--sp-1);
+  gap: 4px;
   flex-shrink: 0;
 }
 
 #yt-url-input {
   flex: 1;
-  padding: 4px var(--sp-2);
+  padding: 4px 8px;
   border: 1px solid var(--rule);
   background: var(--paper);
   font-family: var(--font-mono);
@@ -791,7 +795,7 @@ html, body {
 }
 
 #yt-url-input:focus {
-  border-color: var(--ink-mid);
+  border-color: var(--ink);
 }
 
 .yt-btn {
@@ -809,7 +813,7 @@ html, body {
 }
 
 .yt-btn:hover {
-  border-color: var(--ink-mid);
+  border-color: var(--ink);
 }
 
 /* ── Scrollbar ─────────────────────────────────────── */
@@ -831,9 +835,8 @@ html, body {
     grid-template-areas:
       "clock"
       "weather"
-      "stocks"
-      "calendar"
       "class"
+      "stocks"
       "air"
       "youtube"
       "chat";
@@ -842,17 +845,7 @@ html, body {
   .widget {
     min-height: 200px;
   }
-  .chat-widget {
-    flex-direction: column;
-  }
-  .chat-messages {
-    flex-direction: column;
-  }
-  .chat-input-area {
-    border-left: none;
-    border-top: 1px solid var(--rule);
-    padding-left: 0;
-    padding-top: var(--sp-2);
-    min-width: unset;
+  .clock-widget {
+    min-height: auto;
   }
 }
