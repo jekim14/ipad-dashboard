@@ -1,13 +1,26 @@
-// ── Clock ─────────────────────────────────────────────
+// ── Flip Clock ────────────────────────────────────────
 
 const KOREAN_DAYS = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+let prevDigits = ['', '', '', ''];
 
-function updateClock() {
+function updateFlipClock() {
   const now = new Date();
   const h = String(now.getHours()).padStart(2, '0');
   const m = String(now.getMinutes()).padStart(2, '0');
+  const digits = [h[0], h[1], m[0], m[1]];
+  const ids = ['h0', 'h1', 'm0', 'm1'];
 
-  document.getElementById('clock-digits').textContent = `${h}:${m}`;
+  digits.forEach((d, i) => {
+    const el = document.getElementById(ids[i]);
+    const span = el.querySelector('.flip-card span');
+    if (prevDigits[i] !== d) {
+      span.textContent = d;
+      el.classList.add('flipping');
+      setTimeout(() => el.classList.remove('flipping'), 400);
+    }
+  });
+
+  prevDigits = digits;
 
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
@@ -17,8 +30,8 @@ function updateClock() {
     `${year}년 ${month}월 ${day}일 ${dayName}`;
 }
 
-updateClock();
-setInterval(updateClock, 1000);
+updateFlipClock();
+setInterval(updateFlipClock, 1000);
 
 // ── Weather ───────────────────────────────────────────
 
@@ -293,7 +306,34 @@ function updateClassCountdown() {
 updateClassCountdown();
 setInterval(updateClassCountdown, 30 * 1000);
 
-// ── Air Quality (horizontal bars) ────────────────────
+// ── Air Quality (status-focused) ────────────────────
+
+function getAirStatus(val, thresholds) {
+  if (val <= thresholds[0]) return { text: '좋음', level: 1 };
+  if (val <= thresholds[1]) return { text: '보통', level: 2 };
+  if (val <= thresholds[2]) return { text: '나쁨', level: 3 };
+  return { text: '매우나쁨', level: 4 };
+}
+
+function getTempStatus(val) {
+  if (val >= 18 && val <= 26) return { text: '적정', level: 1 };
+  if (val >= 15 && val <= 28) return { text: '보통', level: 2 };
+  return { text: '나쁨', level: 3 };
+}
+
+function getHumidityStatus(val) {
+  if (val >= 40 && val <= 60) return { text: '적정', level: 1 };
+  if (val >= 30 && val <= 70) return { text: '보통', level: 2 };
+  return { text: '나쁨', level: 3 };
+}
+
+function renderDots(level, maxLevel) {
+  let dots = '';
+  for (let i = 0; i < maxLevel; i++) {
+    dots += i < level ? '\u25CF ' : '\u25CB ';
+  }
+  return dots.trim();
+}
 
 function updateAirQuality() {
   const temp = (23 + Math.random() * 1.5).toFixed(1);
@@ -306,26 +346,25 @@ function updateAirQuality() {
   document.getElementById('air-pm25').textContent = pm25;
   document.getElementById('air-pm10').textContent = pm10;
 
-  // Bar fills: temp 15-30, humidity 0-100, PM2.5 0-75, PM10 0-150
-  const tempPct = Math.min(100, Math.max(0, ((parseFloat(temp) - 15) / 15) * 100));
-  const humidPct = Math.min(100, humidity);
-  const pm25Pct = Math.min(100, (pm25 / 75) * 100);
-  const pm10Pct = Math.min(100, (pm10 / 150) * 100);
+  const tempSt = getTempStatus(parseFloat(temp));
+  const humSt = getHumidityStatus(humidity);
+  const pm25St = getAirStatus(pm25, [15, 35, 75]);
+  const pm10St = getAirStatus(pm10, [30, 80, 150]);
 
-  document.getElementById('air-temp-bar').style.width = tempPct + '%';
-  document.getElementById('air-humidity-bar').style.width = humidPct + '%';
-  document.getElementById('air-pm25-bar').style.width = pm25Pct + '%';
-  document.getElementById('air-pm10-bar').style.width = pm10Pct + '%';
+  document.getElementById('air-temp-status').textContent = tempSt.text;
+  document.getElementById('air-humidity-status').textContent = humSt.text;
+  document.getElementById('air-pm25-status').textContent = pm25St.text;
+  document.getElementById('air-pm10-status').textContent = pm10St.text;
 
-  function getStatus(val, thresholds) {
-    if (val <= thresholds[0]) return '좋음';
-    if (val <= thresholds[1]) return '보통';
-    if (val <= thresholds[2]) return '나쁨';
-    return '매우나쁨';
-  }
+  document.getElementById('air-temp-dots').textContent = renderDots(tempSt.level, 4);
+  document.getElementById('air-humidity-dots').textContent = renderDots(humSt.level, 4);
+  document.getElementById('air-pm25-dots').textContent = renderDots(pm25St.level, 4);
+  document.getElementById('air-pm10-dots').textContent = renderDots(pm10St.level, 4);
 
-  document.getElementById('air-pm25-status').textContent = getStatus(pm25, [15, 35, 75]);
-  document.getElementById('air-pm10-status').textContent = getStatus(pm10, [30, 80, 150]);
+  // Overall status: worst of PM2.5 and PM10
+  const worstLevel = Math.max(pm25St.level, pm10St.level);
+  const overallTexts = ['좋음', '보통', '나쁨', '매우나쁨'];
+  document.getElementById('air-overall-status').textContent = overallTexts[worstLevel - 1];
 }
 
 updateAirQuality();
@@ -377,27 +416,25 @@ chatInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
 
-// ── YouTube ──────────────────────────────────────────
+// ── YouTube (channel subscriptions) ──────────────────
 
 const ytIframe = document.getElementById('yt-iframe');
 const ytEmpty = document.getElementById('yt-empty');
 const ytUrlInput = document.getElementById('yt-url-input');
 const ytLoadBtn = document.getElementById('yt-load');
-const ytRecentList = document.getElementById('yt-recent');
 const ytNowPlaying = document.getElementById('yt-now-playing');
-const ytRecommendedEl = document.getElementById('yt-recommended');
+const ytChannelsEl = document.getElementById('yt-channels');
 
-const YT_RECOMMENDED = [
-  { id: 'jfKfPfyJRdk', title: '로피 힙합 라디오' },
-  { id: 'lM02vNMRRB0', title: '4K 자연 풍경' },
-  { id: 'VMAPTo7RVCo', title: '재즈 카페 음악' },
-  { id: 'mPZkdNGkNBs', title: '빗소리 백색소음' },
-  { id: '71jHHGfbUMg', title: '클래식 피아노' },
-  { id: '3rnS5mf9NQo', title: '한국 야경' },
+const YT_CHANNELS = [
+  { name: '스터디윗미 Study With Me', id: 'UCaKGBFr4LOQwwQ-lJQdp1bQ', tag: 'lofi/study' },
+  { name: '하루한곡', id: 'UCMxx_hBIBvbXqP08o9KcwPw', tag: 'daily music' },
+  { name: '서울의봄 ASMR', id: 'UCX-USfenzQlhrEJR1zD5IYw', tag: 'ambient' },
+  { name: '수학의신', id: 'UC-7H7ZImLfGF97Y_EJ0oeog', tag: 'education' },
+  { name: '백종원 PAIK', id: 'UCyn-K7rZLXjGl7VXGweIlcA', tag: 'cooking' },
+  { name: '국민은행 KB', id: 'UCnOfwSJHQSX-w2ghMGBtvMQ', tag: 'finance' },
 ];
 
-let ytRecent = JSON.parse(localStorage.getItem('yt-recent') || '[]');
-let ytCurrentId = null;
+let ytActiveChannel = null;
 
 function extractYouTubeId(url) {
   const patterns = [
@@ -415,7 +452,6 @@ function loadYouTubeVideo(url, title) {
   const id = extractYouTubeId(url);
   if (!id) return;
 
-  ytCurrentId = id;
   ytIframe.src = `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`;
   ytIframe.classList.add('visible');
   ytEmpty.classList.add('hidden');
@@ -423,57 +459,55 @@ function loadYouTubeVideo(url, title) {
   const displayTitle = title || url;
   ytNowPlaying.textContent = displayTitle;
   ytNowPlaying.classList.add('visible');
-
-  ytRecommendedEl.querySelectorAll('.yt-rec-item').forEach(item => {
-    item.classList.toggle('active', item.dataset.id === id);
-  });
-
-  const entry = { url, id, title: displayTitle };
-  ytRecent = [entry, ...ytRecent.filter(r => r.id !== id)].slice(0, 3);
-  localStorage.setItem('yt-recent', JSON.stringify(ytRecent));
-  renderYtRecent();
 }
 
-function renderYtRecommended() {
-  ytRecommendedEl.innerHTML = YT_RECOMMENDED.map(v =>
-    `<div class="yt-rec-item" data-id="${v.id}" data-title="${escapeHtml(v.title)}">
-      <img class="yt-rec-thumb" src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" alt="${escapeHtml(v.title)}" loading="lazy">
-      <span class="yt-rec-title">${escapeHtml(v.title)}</span>
-    </div>`
-  ).join('');
+function loadChannelLatest(channelId, channelName) {
+  ytActiveChannel = channelId;
+  // Load channel's live/latest via embed
+  ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(channelId)}&autoplay=1`;
+  ytIframe.classList.add('visible');
+  ytEmpty.classList.add('hidden');
 
-  ytRecommendedEl.querySelectorAll('.yt-rec-item').forEach(item => {
-    item.addEventListener('click', () => {
-      loadYouTubeVideo(item.dataset.id, item.dataset.title);
-    });
-  });
+  ytNowPlaying.textContent = channelName;
+  ytNowPlaying.classList.add('visible');
+
+  renderChannelList();
 }
 
-function renderYtRecent() {
-  ytRecentList.innerHTML = ytRecent.map(r =>
-    `<li class="yt-recent-item" data-url="${escapeHtml(r.url)}">${escapeHtml(r.title || r.url)}</li>`
-  ).join('');
+function renderChannelList() {
+  ytChannelsEl.innerHTML = YT_CHANNELS.map(ch => {
+    const isActive = ytActiveChannel === ch.id;
+    return `<div class="yt-channel-item${isActive ? ' active' : ''}" data-id="${ch.id}" data-name="${escapeHtml(ch.name)}">
+      <span class="yt-ch-marker">${isActive ? '\u25B6' : '\u2013'}</span>
+      <span>${escapeHtml(ch.name)}</span>
+    </div>`;
+  }).join('');
 
-  ytRecentList.querySelectorAll('.yt-recent-item').forEach(item => {
+  ytChannelsEl.querySelectorAll('.yt-channel-item').forEach(item => {
     item.addEventListener('click', () => {
-      const url = item.getAttribute('data-url');
-      ytUrlInput.value = url;
-      loadYouTubeVideo(url);
+      loadChannelLatest(item.dataset.id, item.dataset.name);
     });
   });
 }
 
 ytLoadBtn.addEventListener('click', () => {
   const url = ytUrlInput.value.trim();
-  if (url) loadYouTubeVideo(url);
+  if (url) {
+    ytActiveChannel = null;
+    loadYouTubeVideo(url);
+    renderChannelList();
+  }
 });
 
 ytUrlInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     const url = ytUrlInput.value.trim();
-    if (url) loadYouTubeVideo(url);
+    if (url) {
+      ytActiveChannel = null;
+      loadYouTubeVideo(url);
+      renderChannelList();
+    }
   }
 });
 
-renderYtRecommended();
-renderYtRecent();
+renderChannelList();

@@ -38,11 +38,11 @@ html, body {
 .dashboard {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1.3fr;
-  grid-template-rows: auto 1fr minmax(140px, 1fr);
+  grid-template-rows: auto 1fr auto;
   grid-template-areas:
-    "clock   weather  stocks  chat"
-    "calendar class   air     chat"
-    "youtube  youtube youtube chat";
+    "clock   weather  stocks  youtube"
+    "calendar class   air     youtube"
+    "chat    chat     chat    chat";
   height: 100vh;
   height: 100dvh;
   gap: 1px;
@@ -52,11 +52,11 @@ html, body {
 .clock-widget    { grid-area: clock; }
 .weather-widget  { grid-area: weather; }
 .stocks-widget   { grid-area: stocks; }
-.chat-widget     { grid-area: chat; }
+.youtube-widget  { grid-area: youtube; }
 .calendar-widget { grid-area: calendar; }
 .class-widget    { grid-area: class; }
 .air-widget      { grid-area: air; }
-.youtube-widget  { grid-area: youtube; }
+.chat-widget     { grid-area: chat; }
 
 /* ── Widget Base ───────────────────────────────────── */
 .widget {
@@ -108,23 +108,75 @@ html, body {
   flex-shrink: 0;
 }
 
-/* ── Clock ─────────────────────────────────────────── */
+/* ── Flip Clock ───────────────────────────────────── */
 .clock-widget {
   justify-content: center;
   align-items: flex-start;
   padding: var(--sp-3) var(--sp-4);
 }
 
-.clock-time {
-  line-height: 1;
+.flip-clock {
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }
 
-.clock-digits {
+.flip-digit {
+  position: relative;
+  width: 36px;
+  height: 52px;
+  perspective: 200px;
+}
+
+.flip-card {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.flip-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--rule-light);
+}
+
+.flip-card span {
   font-family: var(--font-mono);
-  font-size: 48px;
-  font-weight: 300;
-  letter-spacing: -0.02em;
+  font-size: 32px;
+  font-weight: 400;
   color: var(--ink);
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.flip-colon {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--ink-light);
+  line-height: 1;
+  margin: 0 2px;
+  align-self: center;
+}
+
+.flip-digit.flipping .flip-card {
+  animation: flipDown 0.4s ease-in-out;
+}
+
+@keyframes flipDown {
+  0% { transform: rotateX(0deg); }
+  50% { transform: rotateX(-8deg); }
+  100% { transform: rotateX(0deg); }
 }
 
 .clock-date {
@@ -132,7 +184,7 @@ html, body {
   font-size: 11px;
   font-weight: 300;
   color: var(--ink-mid);
-  margin-top: var(--sp-1);
+  margin-top: var(--sp-2);
   letter-spacing: 0.04em;
 }
 
@@ -424,9 +476,31 @@ html, body {
   white-space: nowrap;
 }
 
-/* ── Air Quality — Horizontal Bars ─────────────────── */
+/* ── Air Quality — Status-focused ─────────────────── */
 .air-widget {
   gap: var(--sp-2);
+}
+
+.air-overall {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  flex-shrink: 0;
+}
+
+.air-overall-label {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-mid);
+}
+
+.air-overall-status {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: 0.02em;
 }
 
 .air-rows {
@@ -434,27 +508,32 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: var(--sp-3);
+  gap: var(--sp-2);
 }
 
 .air-row {
   display: grid;
-  grid-template-columns: 48px 48px 40px 1fr auto;
+  grid-template-columns: 40px 44px 40px 1fr auto;
   align-items: center;
   gap: var(--sp-2);
+  padding: var(--sp-1) 0;
+  border-bottom: 1px solid var(--rule-light);
+}
+
+.air-row:last-child {
+  border-bottom: none;
 }
 
 .air-metric-label {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 500;
-  color: var(--ink-light);
-  letter-spacing: 0.08em;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ink-mid);
 }
 
 .air-metric-value {
   font-family: var(--font-mono);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 400;
   color: var(--ink);
   text-align: right;
@@ -467,61 +546,57 @@ html, body {
   font-weight: 300;
 }
 
-.air-bar-track {
-  height: 3px;
-  background: var(--rule-light);
-  position: relative;
-  min-width: 40px;
-}
-
-.air-bar-fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: var(--ink);
-  transition: width 0.8s ease-out;
-  width: 0%;
-}
-
 .air-status-text {
   font-family: var(--font-sans);
-  font-size: 9px;
-  font-weight: 400;
-  color: var(--ink-mid);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
   white-space: nowrap;
-  min-width: 32px;
   text-align: right;
+  min-width: 48px;
 }
 
-/* ── Chat ──────────────────────────────────────────── */
+.air-dots {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink);
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+/* ── Chat (wide bottom) ──────────────────────────────── */
 .chat-widget {
   gap: 0;
+  flex-direction: row;
+  padding: var(--sp-2) var(--sp-4);
+  align-items: stretch;
 }
 
 .chat-widget .widget-header {
-  margin-bottom: var(--sp-2);
+  display: none;
 }
 
 .chat-messages {
   flex: 1;
   overflow-y: auto;
   display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
+  flex-direction: row;
+  gap: var(--sp-3);
   padding: var(--sp-1) 0;
+  align-items: flex-end;
 }
 
 .chat-message {
-  max-width: 88%;
+  max-width: 320px;
   padding: var(--sp-2) var(--sp-3);
   font-size: 12px;
   font-weight: 300;
   line-height: 1.6;
+  flex-shrink: 0;
 }
 
 .bot-message {
-  align-self: flex-start;
+  align-self: flex-end;
   border-bottom: 1px solid var(--rule-light);
 }
 
@@ -537,9 +612,11 @@ html, body {
 .chat-input-area {
   display: flex;
   gap: var(--sp-2);
-  padding-top: var(--sp-2);
-  border-top: 1px solid var(--rule);
+  padding-left: var(--sp-3);
+  border-left: 1px solid var(--rule);
   flex-shrink: 0;
+  align-items: center;
+  min-width: 280px;
 }
 
 #chat-input {
@@ -580,9 +657,9 @@ html, body {
   border-color: var(--ink-mid);
 }
 
-/* ── YouTube ───────────────────────────────────────── */
+/* ── YouTube (vertical, 2 rows) ───────────────────── */
 .youtube-widget {
-  gap: var(--sp-1);
+  gap: var(--sp-2);
   padding: var(--sp-3) var(--sp-4);
 }
 
@@ -625,67 +702,11 @@ html, body {
   display: none;
 }
 
-.yt-recommended {
-  display: flex;
-  gap: var(--sp-2);
-  overflow-x: auto;
-  padding: var(--sp-1) 0;
-  flex-shrink: 0;
-  scrollbar-width: thin;
-}
-
-.yt-recommended::-webkit-scrollbar {
-  height: 2px;
-}
-
-.yt-recommended::-webkit-scrollbar-thumb {
-  background: var(--ink-light);
-}
-
-.yt-rec-item {
-  flex-shrink: 0;
-  width: 120px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.yt-rec-item:hover .yt-rec-thumb {
-  opacity: 0.7;
-}
-
-.yt-rec-thumb {
-  width: 120px;
-  height: 68px;
-  object-fit: cover;
-  border: 1px solid var(--rule);
-  background: var(--paper);
-  filter: grayscale(100%);
-  transition: opacity 0.2s;
-}
-
-.yt-rec-title {
-  font-family: var(--font-sans);
-  font-size: 9px;
-  font-weight: 300;
-  color: var(--ink-mid);
-  line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.yt-rec-item.active .yt-rec-title {
-  color: var(--ink);
-  font-weight: 500;
-}
-
 .yt-now-playing {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 300;
-  color: var(--ink-mid);
+  font-weight: 400;
+  color: var(--ink);
   flex-shrink: 0;
   display: none;
 }
@@ -694,49 +715,57 @@ html, body {
   display: block;
 }
 
-.yt-controls {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-1);
-  flex-shrink: 0;
+.yt-now-playing::before {
+  content: 'NOW PLAYING  ';
+  font-weight: 300;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
 }
 
-.yt-btn {
-  width: 28px;
-  height: 24px;
+.yt-channels {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--rule);
-  background: var(--paper);
-  color: var(--ink);
-  cursor: pointer;
+  flex-direction: column;
+  gap: 0;
+  flex-shrink: 0;
+  overflow-y: auto;
+  max-height: 140px;
+}
+
+.yt-channel-item {
+  font-family: var(--font-sans);
   font-size: 11px;
-  flex-shrink: 0;
-}
-
-.yt-btn:hover {
-  border-color: var(--ink-mid);
-}
-
-.yt-volume {
-  flex: 1;
-  height: 2px;
-  -webkit-appearance: none;
-  appearance: none;
-  background: var(--rule);
-  outline: none;
-  margin: 0 var(--sp-2);
-}
-
-.yt-volume::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--ink-mid);
-  border: none;
+  font-weight: 300;
+  color: var(--ink-mid);
   cursor: pointer;
+  padding: var(--sp-1) var(--sp-2);
+  border-bottom: 1px solid var(--rule-light);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.yt-channel-item:last-child {
+  border-bottom: none;
+}
+
+.yt-channel-item:hover {
+  color: var(--ink);
+}
+
+.yt-channel-item.active {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.yt-channel-item .yt-ch-marker {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink-light);
+}
+
+.yt-channel-item.active .yt-ch-marker {
+  color: var(--ink);
 }
 
 .yt-url-area {
@@ -765,30 +794,22 @@ html, body {
   border-color: var(--ink-mid);
 }
 
-.yt-recent {
-  list-style: none;
+.yt-btn {
+  width: 28px;
+  height: 24px;
   display: flex;
-  flex-direction: column;
-  gap: 0;
-  flex-shrink: 0;
-  max-height: 40px;
-  overflow-y: auto;
-}
-
-.yt-recent-item {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 300;
-  color: var(--ink-light);
-  cursor: pointer;
-  padding: 2px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.yt-recent-item:hover {
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--rule);
+  background: var(--paper);
   color: var(--ink);
+  cursor: pointer;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.yt-btn:hover {
+  border-color: var(--ink-mid);
 }
 
 /* ── Scrollbar ─────────────────────────────────────── */
@@ -820,5 +841,18 @@ html, body {
   }
   .widget {
     min-height: 200px;
+  }
+  .chat-widget {
+    flex-direction: column;
+  }
+  .chat-messages {
+    flex-direction: column;
+  }
+  .chat-input-area {
+    border-left: none;
+    border-top: 1px solid var(--rule);
+    padding-left: 0;
+    padding-top: var(--sp-2);
+    min-width: unset;
   }
 }
