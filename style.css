@@ -51,6 +51,15 @@ body::before {
   grid-column: span 2;
 }
 
+.widget-span-3 {
+  grid-column: span 3;
+}
+
+/* Chat widget: tall left column, spanning all 3 rows */
+.chat-widget {
+  grid-row: span 3;
+}
+
 .widget {
   background: var(--bg);
   padding: 20px 22px;
