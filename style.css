@@ -40,7 +40,7 @@ body::before {
 .dashboard {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: 4fr 3fr 3fr;
+  grid-template-rows: repeat(3, 1fr);
   height: 100vh;
   height: 100dvh;
   gap: 1px;
@@ -86,8 +86,8 @@ body::before {
 }
 
 .flip-unit {
-  width: 64px;
-  height: 88px;
+  width: 48px;
+  height: 66px;
   perspective: 300px;
 }
 
@@ -120,7 +120,7 @@ body::before {
 .flip-card-front span,
 .flip-card-back span {
   font-family: var(--font-serif);
-  font-size: 56px;
+  font-size: 40px;
   line-height: 1;
   color: var(--ink);
 }
@@ -141,10 +141,10 @@ body::before {
 
 .flip-colon {
   font-family: var(--font-serif);
-  font-size: 48px;
+  font-size: 34px;
   line-height: 1;
   color: var(--ink);
-  padding-bottom: 6px;
+  padding-bottom: 4px;
   opacity: 0.6;
 }
 
@@ -244,7 +244,7 @@ body::before {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 10px;
+  gap: 6px;
 }
 
 .stock-row {
@@ -260,9 +260,15 @@ body::before {
   letter-spacing: 0.02em;
 }
 
+.stock-label small {
+  font-size: 10px;
+  color: var(--ink-faint);
+  margin-left: 2px;
+}
+
 .stock-value {
   font-family: var(--font-serif);
-  font-size: 22px;
+  font-size: 18px;
   flex: 1;
 }
 
@@ -803,14 +809,14 @@ body::before {
     min-height: 280px;
   }
   .flip-unit {
-    width: 50px;
-    height: 70px;
+    width: 40px;
+    height: 56px;
   }
   .flip-card-front span,
   .flip-card-back span {
-    font-size: 42px;
+    font-size: 32px;
   }
   .flip-colon {
-    font-size: 36px;
+    font-size: 28px;
   }
 }

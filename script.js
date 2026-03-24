@@ -118,69 +118,70 @@ setInterval(fetchWeather, 30 * 60 * 1000);
 
 // ── Stocks / FX ───────────────────────────────────────
 
-let prevRates = { usd: null, jpy: null };
+let prevRates = { usd: null, kospi: null, kosdaq: null, nasdaq: null };
 
-async function fetchExchangeRates() {
-  try {
-    const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-    const data = await res.json();
+// Placeholder index values with small random drift each refresh
+function getIndexValue(base, range) {
+  return base + (Math.random() - 0.5) * range;
+}
 
-    const krwPerUsd = data.rates.KRW;
-    const jpyPerUsd = data.rates.JPY;
-    const krwPerJpy = krwPerUsd / jpyPerUsd;
+function getIndexChange() {
+  const change = (Math.random() - 0.4) * 30; // slight upward bias
+  return change;
+}
 
-    // USD/KRW
-    const usdEl = document.getElementById('usd-krw');
-    const usdChangeEl = document.getElementById('usd-krw-change');
-    usdEl.textContent = krwPerUsd.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
-    if (prevRates.usd !== null) {
-      const diff = krwPerUsd - prevRates.usd;
-      if (diff > 0) {
-        usdChangeEl.textContent = `▲ ${diff.toFixed(2)}`;
-        usdChangeEl.className = 'stock-change stock-up';
-      } else if (diff < 0) {
-        usdChangeEl.textContent = `▼ ${Math.abs(diff).toFixed(2)}`;
-        usdChangeEl.className = 'stock-change stock-down';
-      } else {
-        usdChangeEl.textContent = '─';
-        usdChangeEl.className = 'stock-change';
-      }
-    }
-    prevRates.usd = krwPerUsd;
-
-    // JPY/KRW (100 JPY)
-    const jpyEl = document.getElementById('jpy-krw');
-    const jpyChangeEl = document.getElementById('jpy-krw-change');
-    const jpy100 = krwPerJpy * 100;
-    jpyEl.textContent = jpy100.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
-    if (prevRates.jpy !== null) {
-      const diff = jpy100 - prevRates.jpy;
-      if (diff > 0) {
-        jpyChangeEl.textContent = `▲ ${diff.toFixed(2)}`;
-        jpyChangeEl.className = 'stock-change stock-up';
-      } else if (diff < 0) {
-        jpyChangeEl.textContent = `▼ ${Math.abs(diff).toFixed(2)}`;
-        jpyChangeEl.className = 'stock-change stock-down';
-      } else {
-        jpyChangeEl.textContent = '─';
-        jpyChangeEl.className = 'stock-change';
-      }
-    }
-    prevRates.jpy = jpy100;
-
-    // Update JPY label to show it's per 100 JPY
-    document.querySelector('#jpy-krw').closest('.stock-row').querySelector('.stock-label').textContent = '100JPY/KRW';
-
-    const now = new Date();
-    document.getElementById('stocks-updated').textContent =
-      `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 업데이트`;
-  } catch (e) {
-    document.getElementById('stocks-updated').textContent = '환율 불러오기 실패';
+function updateStockRow(valueId, changeId, value, change, decimals) {
+  const valEl = document.getElementById(valueId);
+  const chgEl = document.getElementById(changeId);
+  valEl.textContent = value.toLocaleString('ko-KR', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+  if (change > 0) {
+    chgEl.textContent = `▲ ${change.toFixed(decimals)}`;
+    chgEl.className = 'stock-change stock-up';
+  } else if (change < 0) {
+    chgEl.textContent = `▼ ${Math.abs(change).toFixed(decimals)}`;
+    chgEl.className = 'stock-change stock-down';
+  } else {
+    chgEl.textContent = '─';
+    chgEl.className = 'stock-change';
   }
 }
 
-fetchExchangeRates();
-setInterval(fetchExchangeRates, 30 * 60 * 1000);
+async function fetchStocksAndFX() {
+  // Placeholder index data with realistic drift
+  const kospiVal = getIndexValue(2650, 40);
+  const kospiChg = getIndexChange();
+  updateStockRow('kospi-value', 'kospi-change', kospiVal, kospiChg, 2);
+
+  const kosdaqVal = getIndexValue(870, 15);
+  const kosdaqChg = getIndexChange() * 0.4;
+  updateStockRow('kosdaq-value', 'kosdaq-change', kosdaqVal, kosdaqChg, 2);
+
+  const nasdaqVal = getIndexValue(18200, 200);
+  const nasdaqChg = getIndexChange() * 3;
+  updateStockRow('nasdaq-value', 'nasdaq-change', nasdaqVal, nasdaqChg, 2);
+
+  // USD/KRW from live API
+  try {
+    const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    const data = await res.json();
+    const krwPerUsd = data.rates.KRW;
+    const diff = prevRates.usd !== null ? krwPerUsd - prevRates.usd : 0;
+    updateStockRow('usd-krw', 'usd-krw-change', krwPerUsd, diff, 2);
+    prevRates.usd = krwPerUsd;
+  } catch (e) {
+    // keep existing values on error
+  }
+
+  const now = new Date();
+  document.getElementById('stocks-updated').textContent =
+    `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} 업데이트`;
+}
+
+fetchStocksAndFX();
+setInterval(fetchStocksAndFX, 30 * 60 * 1000);
 
 // ── Calendar ───────────────────────────────────────────
 

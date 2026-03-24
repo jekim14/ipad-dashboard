@@ -15,7 +15,7 @@
   <div class="dashboard">
 
     <!-- Row 1, Col 1: Flip Clock + Date -->
-    <div class="widget clock-widget widget-span-2">
+    <div class="widget clock-widget">
       <div class="flip-clock" id="flip-clock">
         <div class="flip-unit" id="hour-tens">
           <div class="flip-card">
@@ -74,24 +74,29 @@
     <!-- Row 1, Col 3: Stocks / FX -->
     <div class="widget stocks-widget">
       <div class="widget-header">
-        <span class="widget-title">환율 · 주식</span>
+        <span class="widget-title">주식 · 환율</span>
       </div>
       <div class="stocks-list" id="stocks-list">
         <div class="stock-row">
-          <span class="stock-label">USD/KRW</span>
-          <span class="stock-value" id="usd-krw">--</span>
-          <span class="stock-change" id="usd-krw-change"></span>
+          <span class="stock-label">KOSPI <small>코스피</small></span>
+          <span class="stock-value" id="kospi-value">--</span>
+          <span class="stock-change" id="kospi-change"></span>
         </div>
         <div class="stock-row">
-          <span class="stock-label">JPY/KRW</span>
-          <span class="stock-value" id="jpy-krw">--</span>
-          <span class="stock-change" id="jpy-krw-change"></span>
+          <span class="stock-label">KOSDAQ <small>코스닥</small></span>
+          <span class="stock-value" id="kosdaq-value">--</span>
+          <span class="stock-change" id="kosdaq-change"></span>
+        </div>
+        <div class="stock-row">
+          <span class="stock-label">NASDAQ <small>나스닥</small></span>
+          <span class="stock-value" id="nasdaq-value">--</span>
+          <span class="stock-change" id="nasdaq-change"></span>
         </div>
         <div class="stock-divider"></div>
         <div class="stock-row">
-          <span class="stock-label">KOSPI</span>
-          <span class="stock-value" id="kospi-value">2,687.45</span>
-          <span class="stock-change stock-up" id="kospi-change">▲ 12.30</span>
+          <span class="stock-label">USD/KRW <small>원/달러</small></span>
+          <span class="stock-value" id="usd-krw">--</span>
+          <span class="stock-change" id="usd-krw-change"></span>
         </div>
       </div>
       <div class="stocks-updated" id="stocks-updated">업데이트 중...</div>
@@ -212,7 +217,6 @@
     <div class="widget brand-widget">
       <div class="brand-content">
         <div class="brand-logo">⬡</div>
-        <div class="brand-name">Dashboard</div>
         <div class="brand-sub">iPad E-ink Interface</div>
       </div>
     </div>
