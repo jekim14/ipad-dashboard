@@ -49,6 +49,9 @@ const WMO_DESC = {
 
 const KOREAN_SHORT_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
+// Shared weather data for air quality widget (temp/humidity)
+let latestWeather = { temp: null, humidity: null };
+
 function getWeatherDesc(code) { return WMO_DESC[code] || '알 수 없음'; }
 
 async function fetchWeather() {
@@ -61,6 +64,10 @@ async function fetchWeather() {
     document.getElementById('current-condition').textContent = getWeatherDesc(current.weather_code);
     document.getElementById('current-humidity').textContent = `습도 ${current.relative_humidity_2m}%`;
     document.getElementById('current-wind').textContent = `바람 ${current.wind_speed_10m} km/h`;
+
+    // Share with air quality widget
+    latestWeather.temp = current.temperature_2m;
+    latestWeather.humidity = current.relative_humidity_2m;
 
     const forecastEl = document.getElementById('weather-forecast');
     forecastEl.innerHTML = '';
@@ -95,14 +102,6 @@ setInterval(fetchWeather, 30 * 60 * 1000);
 
 let prevRates = { usd: null };
 
-function getIndexValue(base, range) {
-  return base + (Math.random() - 0.5) * range;
-}
-
-function getIndexChange() {
-  return (Math.random() - 0.4) * 30;
-}
-
 function updateStockRow(valueId, changeId, value, change, decimals) {
   const valEl = document.getElementById(valueId);
   const chgEl = document.getElementById(changeId);
@@ -124,19 +123,38 @@ function updateStockRow(valueId, changeId, value, change, decimals) {
   }
 }
 
+// Yahoo Finance via CORS proxy
+const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+const STOCK_SYMBOLS = [
+  { symbol: '^KS11', valueId: 'kospi-value', changeId: 'kospi-change', decimals: 2 },
+  { symbol: '^KQ11', valueId: 'kosdaq-value', changeId: 'kosdaq-change', decimals: 2 },
+  { symbol: '^IXIC', valueId: 'nasdaq-value', changeId: 'nasdaq-change', decimals: 2 },
+];
+
+async function fetchStockData(symbol) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=1d&interval=1d`;
+  const res = await fetch(CORS_PROXY + encodeURIComponent(url));
+  const data = await res.json();
+  const meta = data.chart.result[0].meta;
+  return {
+    price: meta.regularMarketPrice,
+    previousClose: meta.chartPreviousClose || meta.previousClose,
+  };
+}
+
 async function fetchStocksAndFX() {
-  const kospiVal = getIndexValue(2650, 40);
-  const kospiChg = getIndexChange();
-  updateStockRow('kospi-value', 'kospi-change', kospiVal, kospiChg, 2);
+  // Fetch stock indices
+  for (const s of STOCK_SYMBOLS) {
+    try {
+      const { price, previousClose } = await fetchStockData(s.symbol);
+      const change = price - previousClose;
+      updateStockRow(s.valueId, s.changeId, price, change, s.decimals);
+    } catch (e) {
+      // Keep existing values on error
+    }
+  }
 
-  const kosdaqVal = getIndexValue(870, 15);
-  const kosdaqChg = getIndexChange() * 0.4;
-  updateStockRow('kosdaq-value', 'kosdaq-change', kosdaqVal, kosdaqChg, 2);
-
-  const nasdaqVal = getIndexValue(18200, 200);
-  const nasdaqChg = getIndexChange() * 3;
-  updateStockRow('nasdaq-value', 'nasdaq-change', nasdaqVal, nasdaqChg, 2);
-
+  // Fetch USD/KRW (already live)
   try {
     const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const data = await res.json();
@@ -156,51 +174,82 @@ async function fetchStocksAndFX() {
 fetchStocksAndFX();
 setInterval(fetchStocksAndFX, 30 * 60 * 1000);
 
-// ── Calendar Events (merged into class widget) ───────
+// ── Calendar Events ──────────────────────────────────
 
-function renderCalendarEvents() {
-  const todayEvents = [
-    { time: '09:00', title: '팀 스탠드업 미팅' },
-    { time: '11:00', title: '프로젝트 리뷰' },
-    { time: '14:00', title: '점심 약속' },
-    { time: '16:30', title: '코드 리뷰' },
-  ];
+// Google Calendar API config — set your API key to enable live data
+const GCAL_CONFIG = {
+  apiKey: '', // paste your Google Calendar API key here
+  calendarId: 'jekim14@g.ut.ac.kr',
+};
 
+async function fetchCalendarEvents() {
   const el = document.getElementById('today-events');
-  if (todayEvents.length === 0) {
-    el.innerHTML = '<li class="calendar-empty">일정 없음</li>';
+
+  if (!GCAL_CONFIG.apiKey) {
+    // No API key — show placeholder
+    el.innerHTML = '<li class="calendar-empty">Google Calendar API key를 설정하세요</li>';
     return;
   }
-  el.innerHTML = todayEvents.map(e => `
-    <li class="calendar-event">
-      <span class="event-time">${e.time}</span>
-      <span class="event-title">${e.title}</span>
-    </li>`).join('');
+
+  try {
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
+
+    const params = new URLSearchParams({
+      key: GCAL_CONFIG.apiKey,
+      timeMin: startOfDay.toISOString(),
+      timeMax: endOfDay.toISOString(),
+      singleEvents: 'true',
+      orderBy: 'startTime',
+      maxResults: '10',
+    });
+
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GCAL_CONFIG.calendarId)}/events?${params}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data.items || data.items.length === 0) {
+      el.innerHTML = '<li class="calendar-empty">일정 없음</li>';
+      return;
+    }
+
+    const events = data.items.map(item => {
+      const start = item.start.dateTime || item.start.date;
+      const time = item.start.dateTime
+        ? new Date(start).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false })
+        : '종일';
+      return { time, title: item.summary || '(제목 없음)' };
+    });
+
+    el.innerHTML = events.map(e => `
+      <li class="calendar-event">
+        <span class="event-time">${e.time}</span>
+        <span class="event-title">${e.title}</span>
+      </li>`).join('');
+  } catch (e) {
+    el.innerHTML = '<li class="calendar-empty">캘린더를 불러올 수 없음</li>';
+  }
 }
 
-renderCalendarEvents();
+fetchCalendarEvents();
+setInterval(fetchCalendarEvents, 30 * 60 * 1000);
 
 // ── Class Countdown ──────────────────────────────────
 
+// 2026-1학기 시간표
+// JS: 0=일, 1=월, 2=화, 3=수, 4=목, 5=금, 6=토
 const CLASS_SCHEDULE = {
-  1: [
+  2: [ // 화요일
+    { start: '11:00', end: '12:30', name: '진로탐색세미나' },
+  ],
+  3: [ // 수요일
     { start: '13:00', end: '14:30', name: '기능성식품학' },
-    { start: '14:30', end: '16:00', name: '식품생명공학' },
-    { start: '18:30', end: '20:00', name: '식품생명공학연구론' },
+    { start: '15:00', end: '16:30', name: '정밀식품학연구' },
   ],
-  2: [
-    { start: '13:00', end: '14:30', name: '기능성식품학' },
-    { start: '14:30', end: '16:00', name: '식품생명공학' },
-    { start: '16:00', end: '17:30', name: '진로탐색세미나' },
-    { start: '18:30', end: '20:00', name: '식품생명공학연구론' },
-  ],
-  3: [
-    { start: '13:00', end: '14:30', name: '커피차그리고초콜릿' },
-    { start: '14:30', end: '16:00', name: '술의과학문화그리고생활' },
-  ],
-  4: [
-    { start: '13:00', end: '14:30', name: '커피차그리고초콜릿' },
-    { start: '14:30', end: '16:00', name: '술의과학문화그리고생활' },
+  4: [ // 목요일
+    { start: '09:00', end: '10:30', name: '술의과학문화그리고생활' },
+    { start: '15:00', end: '16:30', name: '커피차그리고초콜릿' },
   ],
 };
 
@@ -295,7 +344,14 @@ function updateClassCountdown() {
 updateClassCountdown();
 setInterval(updateClassCountdown, 30 * 1000);
 
-// ── Air Quality (Design D: Minimal Grid) ─────────────
+// ── Air Quality (LG ThinQ Air Purifier) ──────────────
+
+const THINQ_CONFIG = {
+  pat: 'thinqpat_0cdb10b46e1d6fbcdb16b67097012cd63865b755d91d7e1dbb8d',
+  deviceId: 'c8e72fe199519837e0cfc562b8363995384d6fd38e7044c0969150994df52b3a',
+  apiBase: 'https://api-kic.lgthinq.com',
+  clientId: 'openclaw',
+};
 
 function getAirStatus(val, thresholds) {
   if (val <= thresholds[0]) return { text: '좋음', level: 1 };
@@ -304,46 +360,88 @@ function getAirStatus(val, thresholds) {
   return { text: '매우나쁨', level: 4 };
 }
 
-function updateAirQuality() {
-  const temp = (23 + Math.random() * 1.5).toFixed(1);
-  const humidity = Math.floor(43 + Math.random() * 5);
-  const pm25 = Math.floor(8 + Math.random() * 10);
-  const pm10 = Math.floor(18 + Math.random() * 15);
-
-  document.getElementById('air-temp').textContent = temp;
-  document.getElementById('air-humidity').textContent = humidity;
-  document.getElementById('air-pm25').textContent = pm25;
-  document.getElementById('air-pm10').textContent = pm10;
-
-  const pm25St = getAirStatus(pm25, [15, 35, 75]);
-  const pm10St = getAirStatus(pm10, [30, 80, 150]);
-
-  document.getElementById('air-pm25-status').textContent = pm25St.text;
-  document.getElementById('air-pm10-status').textContent = pm10St.text;
-
-  const worstLevel = Math.max(pm25St.level, pm10St.level);
-  const overallTexts = ['좋음', '보통', '나쁨', '매우나쁨'];
-
-  const dot = document.getElementById('air-dot');
-  const statusText = document.getElementById('air-status-text');
-  const aqiEl = document.getElementById('air-aqi');
-
-  statusText.textContent = overallTexts[worstLevel - 1];
-  dot.setAttribute('data-level', worstLevel);
-
-  // Simple AQI approximation from PM2.5
-  const aqi = Math.round(pm25 * 2.1 + 5);
-  aqiEl.textContent = `AQI ${aqi}`;
-
-  // Update timestamp
-  const now = new Date();
-  const hh = String(now.getHours()).padStart(2, '0');
-  const mm = String(now.getMinutes()).padStart(2, '0');
-  document.getElementById('air-updated').textContent = `오송 · ${hh}:${mm} 업데이트`;
+function thinqLevelToKor(level) {
+  const map = { GOOD: '좋음', MODERATE: '보통', BAD: '나쁨', UNHEALTHY: '매우나쁨',
+                VERY_UNHEALTHY: '매우나쁨', HAZARDOUS: '위험' };
+  return map[level] || level || '--';
 }
 
-updateAirQuality();
-setInterval(updateAirQuality, 5 * 60 * 1000);
+async function fetchAirQuality() {
+  try {
+    const res = await fetch(
+      `${THINQ_CONFIG.apiBase}/v1/service/devices/${THINQ_CONFIG.deviceId}/status`,
+      {
+        headers: {
+          'Authorization': `Bearer ${THINQ_CONFIG.pat}`,
+          'x-country-code': 'KR',
+          'x-client-id': THINQ_CONFIG.clientId,
+        },
+      }
+    );
+
+    if (!res.ok) throw new Error(`ThinQ ${res.status}`);
+    const data = await res.json();
+
+    // Navigate to airQualitySensor (may be nested under result)
+    const sensor = data?.result?.airQualitySensor || data?.airQualitySensor || {};
+
+    const pm25 = sensor.PM2 ?? '--';
+    const pm10 = sensor.PM10 ?? '--';
+
+    document.getElementById('air-pm25').textContent = pm25;
+    document.getElementById('air-pm10').textContent = pm10;
+
+    // Use ThinQ levels if available, else calculate
+    const pm25Status = sensor.PM2Level
+      ? thinqLevelToKor(sensor.PM2Level)
+      : (typeof pm25 === 'number' ? getAirStatus(pm25, [15, 35, 75]).text : '--');
+    const pm10Status = sensor.PM10Level
+      ? thinqLevelToKor(sensor.PM10Level)
+      : (typeof pm10 === 'number' ? getAirStatus(pm10, [30, 80, 150]).text : '--');
+
+    document.getElementById('air-pm25-status').textContent = pm25Status;
+    document.getElementById('air-pm10-status').textContent = pm10Status;
+
+    // Overall status from totalPollutionLevel or worst of PM2/PM10
+    const overallText = sensor.totalPollutionLevel
+      ? thinqLevelToKor(sensor.totalPollutionLevel === 'NORMAL' ? 'GOOD' : sensor.totalPollutionLevel)
+      : pm25Status;
+
+    const levelMap = { '좋음': 1, '보통': 2, '나쁨': 3, '매우나쁨': 4, '위험': 4 };
+    const worstLevel = Math.max(levelMap[pm25Status] || 1, levelMap[pm10Status] || 1);
+
+    document.getElementById('air-status-text').textContent = overallText;
+    document.getElementById('air-dot').setAttribute('data-level', worstLevel);
+
+    // Show totalPollution as AQI-like value
+    const pollution = sensor.totalPollution;
+    document.getElementById('air-aqi').textContent = pollution != null
+      ? `오염도 ${pollution}` : '';
+
+    // Use temperature/humidity from weather API
+    if (latestWeather.temp !== null) {
+      document.getElementById('air-temp').textContent = latestWeather.temp.toFixed(1);
+    }
+    if (latestWeather.humidity !== null) {
+      document.getElementById('air-humidity').textContent = latestWeather.humidity;
+    }
+
+    // Update timestamp
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('air-updated').textContent = `연구실 · ${hh}:${mm} 업데이트`;
+  } catch (e) {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('air-updated').textContent = `연구실 · ${hh}:${mm} 연결 실패`;
+  }
+}
+
+// Wait briefly for weather to load first (for temp/humidity data)
+setTimeout(fetchAirQuality, 2000);
+setInterval(fetchAirQuality, 5 * 60 * 1000);
 
 // ── Chat ─────────────────────────────────────────────
 
