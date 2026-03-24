@@ -39,25 +39,49 @@ body::before {
 /* ── Dashboard Grid (4-col, 3 rows) ──────────────────── */
 .dashboard {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr 1fr 1.3fr;
+  grid-template-rows: auto auto minmax(150px, 1fr);
+  grid-template-areas:
+    "clock   weather  stocks  chat"
+    "calendar class   air     chat"
+    "youtube  youtube youtube chat";
   height: 100vh;
   height: 100dvh;
   gap: 1px;
   background: var(--border);
 }
 
-.widget-span-2 {
-  grid-column: span 2;
-}
-
-.widget-span-3 {
-  grid-column: span 3;
-}
-
-/* Chat widget: tall left column, spanning all 3 rows */
+/* Chat widget: tall right column, spanning all 3 rows */
 .chat-widget {
-  grid-row: span 3;
+  grid-area: chat;
+}
+
+.clock-widget {
+  grid-area: clock;
+}
+
+.weather-widget {
+  grid-area: weather;
+}
+
+.stocks-widget {
+  grid-area: stocks;
+}
+
+.calendar-widget {
+  grid-area: calendar;
+}
+
+.class-widget {
+  grid-area: class;
+}
+
+.air-widget {
+  grid-area: air;
+}
+
+.youtube-widget {
+  grid-area: youtube;
 }
 
 .widget {
@@ -66,6 +90,27 @@ body::before {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* Tighter padding for compact widgets */
+.clock-widget {
+  padding: 12px 14px;
+}
+
+.class-widget {
+  padding: 14px 18px;
+}
+
+/* Standard padding for medium widgets */
+.weather-widget,
+.calendar-widget,
+.air-widget {
+  padding: 16px 20px;
+}
+
+/* More room for content-heavy widgets */
+.youtube-widget {
+  padding: 12px 18px;
 }
 
 .widget-header {
@@ -812,6 +857,15 @@ body::before {
   .dashboard {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
+    grid-template-areas:
+      "clock"
+      "weather"
+      "stocks"
+      "calendar"
+      "class"
+      "air"
+      "youtube"
+      "chat";
     overflow-y: auto;
   }
   .widget {

@@ -14,28 +14,7 @@
 <body>
   <div class="dashboard">
 
-    <!-- Col 1, Rows 1-3: Sunny Chat (tall, left side) -->
-    <div class="widget chat-widget">
-      <div class="widget-header">
-        <span class="widget-title">☀️ Sunny</span>
-      </div>
-      <div class="chat-messages" id="chat-messages">
-        <div class="chat-message bot-message">
-          <span class="message-text">안녕하세요! 무엇을 도와드릴까요?</span>
-        </div>
-      </div>
-      <div class="chat-input-area">
-        <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." autocomplete="off">
-        <button id="chat-send" aria-label="Send">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Row 1, Col 2: Clock -->
+    <!-- Row 1, Col 1: Clock -->
     <div class="widget clock-widget">
       <div class="flip-clock" id="flip-clock">
         <div class="flip-unit" id="hour-tens">
@@ -75,7 +54,7 @@
       <div class="date-display" id="date-display"></div>
     </div>
 
-    <!-- Row 1, Col 3: Weather -->
+    <!-- Row 1, Col 2: Weather -->
     <div class="widget weather-widget">
       <div class="widget-header">
         <span class="widget-title">오송</span>
@@ -121,6 +100,27 @@
         </div>
       </div>
       <div class="stocks-updated" id="stocks-updated">업데이트 중...</div>
+    </div>
+
+    <!-- Col 4, Rows 1-3: Sunny Chat (tall, right side) -->
+    <div class="widget chat-widget">
+      <div class="widget-header">
+        <span class="widget-title">☀️ Sunny</span>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-message bot-message">
+          <span class="message-text">안녕하세요! 무엇을 도와드릴까요?</span>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." autocomplete="off">
+        <button id="chat-send" aria-label="Send">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <!-- Row 2, Col 1: Calendar -->
@@ -189,8 +189,8 @@
       <div class="air-status" id="air-status">LG ThinQ 연결 대기 중</div>
     </div>
 
-    <!-- Row 3, Cols 2-4: YouTube Control -->
-    <div class="widget youtube-widget widget-span-3">
+    <!-- Row 3, Cols 1-3: YouTube Control -->
+    <div class="widget youtube-widget">
       <div class="widget-header">
         <span class="widget-title">▶ YouTube</span>
       </div>
