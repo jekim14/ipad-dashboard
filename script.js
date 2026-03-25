@@ -434,180 +434,29 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-// ── YouTube (IFrame Player API + data/media.json) ────
+// ── Media (thumbnail grid → open in YouTube app) ────
 
 const ytThumbGrid = document.getElementById('yt-thumb-grid');
-const ytUrlInput = document.getElementById('yt-url-input');
-const ytLoadBtn = document.getElementById('yt-load');
-const ytControls = document.getElementById('yt-controls');
-const ytNowTitle = document.getElementById('yt-now-title');
-const ytNowChannel = document.getElementById('yt-now-channel');
-const ytPlayPause = document.getElementById('yt-play-pause');
-const ytBackToGrid = document.getElementById('yt-back-to-grid');
-const ytProgressWrap = document.getElementById('yt-progress-wrap');
-const ytProgressBar = document.getElementById('yt-progress-bar');
-const ytTimeEl = document.getElementById('yt-time');
 
-let ytPlayer = null;
-let ytPlayerReady = false;
-let ytProgressTimer = null;
-
-function extractYouTubeId(url) {
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-    /^([a-zA-Z0-9_-]{11})$/,
-  ];
-  for (const p of patterns) {
-    const m = url.match(p);
-    if (m) return m[1];
-  }
-  return null;
-}
-
-function formatTime(sec) {
-  const s = Math.floor(sec);
-  const m = Math.floor(s / 60);
-  const ss = String(s % 60).padStart(2, '0');
-  return `${m}:${ss}`;
-}
-
-// YouTube IFrame Player API callback
-window.onYouTubeIframeAPIReady = function () {
-  ytPlayer = new YT.Player('yt-player', {
-    height: '100%',
-    width: '100%',
-    playerVars: {
-      autoplay: 0,
-      playsinline: 1,
-      rel: 0,
-      modestbranding: 1,
-      controls: 0,
-    },
-    events: {
-      onReady: () => { ytPlayerReady = true; },
-      onStateChange: onPlayerStateChange,
-    },
-  });
-};
-
-function onPlayerStateChange(event) {
-  if (event.data === YT.PlayerState.PLAYING) {
-    ytPlayPause.textContent = '⏸';
-    startProgressUpdate();
-  } else if (event.data === YT.PlayerState.PAUSED) {
-    ytPlayPause.textContent = '▶';
-    stopProgressUpdate();
-  } else if (event.data === YT.PlayerState.ENDED) {
-    ytPlayPause.textContent = '▶';
-    stopProgressUpdate();
-  }
-}
-
-function startProgressUpdate() {
-  stopProgressUpdate();
-  ytProgressTimer = setInterval(updateProgress, 500);
-}
-
-function stopProgressUpdate() {
-  if (ytProgressTimer) { clearInterval(ytProgressTimer); ytProgressTimer = null; }
-}
-
-function updateProgress() {
-  if (!ytPlayer || !ytPlayer.getDuration) return;
-  const dur = ytPlayer.getDuration();
-  const cur = ytPlayer.getCurrentTime();
-  if (dur > 0) {
-    ytProgressBar.style.width = ((cur / dur) * 100) + '%';
-    ytTimeEl.textContent = `${formatTime(cur)} / ${formatTime(dur)}`;
-  }
-}
-
-// Play a video by ID
-function playVideo(videoId, title, channel) {
-  if (!ytPlayerReady) return;
-
-  ytPlayer.loadVideoById({ videoId, suggestedQuality: 'default' });
-  document.getElementById('yt-player').style.display = 'block';
-  ytThumbGrid.style.display = 'none';
-  ytControls.style.display = 'block';
-
-  ytNowTitle.textContent = title || videoId;
-  ytNowChannel.textContent = channel || '';
-}
-
-// Show grid, hide player
-function showGrid() {
-  if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
-  document.getElementById('yt-player').style.display = 'none';
-  ytThumbGrid.style.display = '';
-  ytControls.style.display = 'none';
-  stopProgressUpdate();
-}
-
-// Render thumbnail grid from data/media.json
 async function loadMediaGrid() {
   try {
     const res = await fetch('data/media.json?t=' + Date.now());
-    const data = await res.json();
-    const videos = (data.videos || []).slice(0, 6); // 3x2 grid
+    const mediaData = await res.json();
+    const videos = (mediaData.videos || []).slice(0, 6);
 
     ytThumbGrid.innerHTML = videos.map(v =>
-      `<div class="yt-thumb-item" data-id="${v.id}" data-title="${escapeHtml(v.title)}" data-channel="${escapeHtml(v.channel)}">
+      `<a class="yt-thumb-item" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">
         <img src="${v.thumb}" alt="${escapeHtml(v.title)}" loading="lazy">
         <div class="yt-thumb-label">
           ${escapeHtml(v.title.length > 30 ? v.title.slice(0, 28) + '…' : v.title)}
           <span class="yt-thumb-ch">${escapeHtml(v.channel)}</span>
         </div>
-      </div>`
+      </a>`
     ).join('');
-
-    ytThumbGrid.querySelectorAll('.yt-thumb-item').forEach(item => {
-      item.addEventListener('click', () => {
-        playVideo(item.dataset.id, item.dataset.title, item.dataset.channel);
-      });
-    });
   } catch (e) {
     ytThumbGrid.innerHTML = '<div style="color:#999;padding:20px;text-align:center">미디어 로드 실패</div>';
   }
 }
 
-// Controls
-ytPlayPause.addEventListener('click', () => {
-  if (!ytPlayer) return;
-  const state = ytPlayer.getPlayerState();
-  if (state === YT.PlayerState.PLAYING) {
-    ytPlayer.pauseVideo();
-  } else {
-    ytPlayer.playVideo();
-  }
-});
-
-ytBackToGrid.addEventListener('click', showGrid);
-
-// Progress bar seek
-ytProgressWrap.addEventListener('click', (e) => {
-  if (!ytPlayer || !ytPlayer.getDuration) return;
-  const rect = ytProgressWrap.getBoundingClientRect();
-  const pct = (e.clientX - rect.left) / rect.width;
-  ytPlayer.seekTo(pct * ytPlayer.getDuration(), true);
-});
-
-// URL input
-ytLoadBtn.addEventListener('click', () => {
-  const url = ytUrlInput.value.trim();
-  const id = extractYouTubeId(url);
-  if (id) playVideo(id, url);
-});
-
-ytUrlInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    const url = ytUrlInput.value.trim();
-    const id = extractYouTubeId(url);
-    if (id) playVideo(id, url);
-  }
-});
-
-// Initialize
 loadMediaGrid();
-// Refresh media grid every 30 minutes
 setInterval(loadMediaGrid, 30 * 60 * 1000);
