@@ -8,147 +8,6 @@
         "self": true
       },
       "end": {
-        "date": "2026-03-26"
-      },
-      "etag": "\"3520852078575006\"",
-      "eventType": "workingLocation",
-      "htmlLink": "https://www.google.com/calendar/event?eid=NXVyZmhvb2E0aXAyODBwdWptZWRxcTBtcmNfMjAyNjAzMjUgamVraW0xNEBnLnV0LmFjLmty",
-      "iCalUID": "5urfhooa4ip280pujmedqq0mrc@google.com",
-      "id": "5urfhooa4ip280pujmedqq0mrc_20260325",
-      "kind": "calendar#event",
-      "organizer": {
-        "displayName": "김종은",
-        "email": "jekim14@g.ut.ac.kr",
-        "self": true
-      },
-      "originalStartTime": {
-        "date": "2026-03-25"
-      },
-      "recurringEventId": "5urfhooa4ip280pujmedqq0mrc",
-      "reminders": {},
-      "start": {
-        "date": "2026-03-25"
-      },
-      "status": "confirmed",
-      "summary": "사무실",
-      "transparency": "transparent",
-      "updated": "2025-10-14T07:13:59.287Z",
-      "visibility": "public",
-      "workingLocationProperties": {
-        "officeLocation": {},
-        "type": "officeLocation"
-      }
-    },
-    {
-      "created": "2026-02-26T14:37:05.000Z",
-      "creator": {
-        "displayName": "김종은",
-        "email": "jekim14@g.ut.ac.kr",
-        "self": true
-      },
-      "end": {
-        "dateTime": "2026-03-25T12:30:00+09:00",
-        "timeZone": "Asia/Seoul"
-      },
-      "etag": "\"3544233251140670\"",
-      "eventType": "default",
-      "htmlLink": "https://www.google.com/calendar/event?eid=Z2UzbTAzbDdpNzBsNWJvazl0MnZlNDl0ZG8gamVraW0xNEBnLnV0LmFjLmty",
-      "iCalUID": "ge3m03l7i70l5bok9t2ve49tdo@google.com",
-      "id": "ge3m03l7i70l5bok9t2ve49tdo",
-      "kind": "calendar#event",
-      "location": "생명관(314)",
-      "organizer": {
-        "displayName": "김종은",
-        "email": "jekim14@g.ut.ac.kr",
-        "self": true
-      },
-      "reminders": {
-        "useDefault": true
-      },
-      "start": {
-        "dateTime": "2026-03-25T11:00:00+09:00",
-        "timeZone": "Asia/Seoul"
-      },
-      "status": "confirmed",
-      "summary": "진로탐색세미나-20",
-      "updated": "2026-02-26T14:37:05.570Z"
-    },
-    {
-      "created": "2026-02-26T14:37:21.000Z",
-      "creator": {
-        "displayName": "김종은",
-        "email": "jekim14@g.ut.ac.kr",
-        "self": true
-      },
-      "end": {
-        "dateTime": "2026-03-25T14:30:00+09:00",
-        "timeZone": "Asia/Seoul"
-      },
-      "etag": "\"3544233283923390\"",
-      "eventType": "default",
-      "htmlLink": "https://www.google.com/calendar/event?eid=N240M2RtYnR2bHJuMGc2MG5mM28zMWg2NmsgamVraW0xNEBnLnV0LmFjLmty",
-      "iCalUID": "7n43dmbtvlrn0g60nf3o31h66k@google.com",
-      "id": "7n43dmbtvlrn0g60nf3o31h66k",
-      "kind": "calendar#event",
-      "location": "생명관(314)",
-      "organizer": {
-        "displayName": "김종은",
-        "email": "jekim14@g.ut.ac.kr",
-        "self": true
-      },
-      "reminders": {
-        "useDefault": true
-      },
-      "start": {
-        "dateTime": "2026-03-25T13:00:00+09:00",
-        "timeZone": "Asia/Seoul"
-      },
-      "status": "confirmed",
-      "summary": "기능성식품학-1",
-      "updated": "2026-02-26T14:37:21.961Z"
-    },
-    {
-      "created": "2026-02-26T14:37:38.000Z",
-      "creator": {
-        "displayName": "김종은",
-        "email": "jekim14@g.ut.ac.kr",
-        "self": true
-      },
-      "end": {
-        "dateTime": "2026-03-25T16:30:00+09:00",
-        "timeZone": "Asia/Seoul"
-      },
-      "etag": "\"3544233318236478\"",
-      "eventType": "default",
-      "htmlLink": "https://www.google.com/calendar/event?eid=YTk3YnY4cGY2YWJxZGE2azc4aXFmbTllNmsgamVraW0xNEBnLnV0LmFjLmty",
-      "iCalUID": "a97bv8pf6abqda6k78iqfm9e6k@google.com",
-      "id": "a97bv8pf6abqda6k78iqfm9e6k",
-      "kind": "calendar#event",
-      "location": "생명관(210)",
-      "organizer": {
-        "displayName": "김종은",
-        "email": "jekim14@g.ut.ac.kr",
-        "self": true
-      },
-      "reminders": {
-        "useDefault": true
-      },
-      "start": {
-        "dateTime": "2026-03-25T15:00:00+09:00",
-        "timeZone": "Asia/Seoul"
-      },
-      "status": "confirmed",
-      "summary": "정밀식품학 연구-1",
-      "updated": "2026-02-26T14:37:39.118Z"
-    },
-    {
-      "created": "2025-10-14T07:13:59.000Z",
-      "creator": {
-        "displayName": "김종은",
-        "email": "jekim14@g.ut.ac.kr",
-        "self": true
-      },
-      "end": {
         "date": "2026-03-27"
       },
       "etag": "\"3520852079285662\"",
@@ -247,6 +106,79 @@
       "status": "confirmed",
       "summary": "커피,차,그리고 초콜릿-1",
       "updated": "2026-02-26T14:38:13.000Z"
+    },
+    {
+      "created": "2025-10-14T07:14:00.000Z",
+      "creator": {
+        "displayName": "김종은",
+        "email": "jekim14@g.ut.ac.kr",
+        "self": true
+      },
+      "end": {
+        "date": "2026-03-28"
+      },
+      "etag": "\"3520852081431486\"",
+      "eventType": "workingLocation",
+      "htmlLink": "https://www.google.com/calendar/event?eid=aW1razM4cTB1ZzRjajJkbWMyZW50cXZ1NXNfMjAyNjAzMjcgamVraW0xNEBnLnV0LmFjLmty",
+      "iCalUID": "imkk38q0ug4cj2dmc2entqvu5s@google.com",
+      "id": "imkk38q0ug4cj2dmc2entqvu5s_20260327",
+      "kind": "calendar#event",
+      "organizer": {
+        "displayName": "김종은",
+        "email": "jekim14@g.ut.ac.kr",
+        "self": true
+      },
+      "originalStartTime": {
+        "date": "2026-03-27"
+      },
+      "recurringEventId": "imkk38q0ug4cj2dmc2entqvu5s",
+      "reminders": {},
+      "start": {
+        "date": "2026-03-27"
+      },
+      "status": "confirmed",
+      "summary": "사무실",
+      "transparency": "transparent",
+      "updated": "2025-10-14T07:14:00.715Z",
+      "visibility": "public",
+      "workingLocationProperties": {
+        "officeLocation": {},
+        "type": "officeLocation"
+      }
+    },
+    {
+      "created": "2026-02-26T14:38:38.000Z",
+      "creator": {
+        "displayName": "김종은",
+        "email": "jekim14@g.ut.ac.kr",
+        "self": true
+      },
+      "end": {
+        "dateTime": "2026-03-27T12:00:00+09:00",
+        "timeZone": "Asia/Seoul"
+      },
+      "etag": "\"3544233437511678\"",
+      "eventType": "default",
+      "htmlLink": "https://www.google.com/calendar/event?eid=aDBhOWs1ZDNiN2NmM2RzN2JidW1xZGo5a2MgamVraW0xNEBnLnV0LmFjLmty",
+      "iCalUID": "h0a9k5d3b7cf3ds7bbumqdj9kc@google.com",
+      "id": "h0a9k5d3b7cf3ds7bbumqdj9kc",
+      "kind": "calendar#event",
+      "location": "생명관(316)",
+      "organizer": {
+        "displayName": "김종은",
+        "email": "jekim14@g.ut.ac.kr",
+        "self": true
+      },
+      "reminders": {
+        "useDefault": true
+      },
+      "start": {
+        "dateTime": "2026-03-27T10:30:00+09:00",
+        "timeZone": "Asia/Seoul"
+      },
+      "status": "confirmed",
+      "summary": "식품생명공학-1",
+      "updated": "2026-02-26T14:38:38.755Z"
     }
   ],
   "nextPageToken": ""
