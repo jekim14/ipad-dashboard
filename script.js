@@ -437,19 +437,17 @@ async function fetchAirQuality() {
 setTimeout(fetchAirQuality, 2000);
 setInterval(fetchAirQuality, 5 * 60 * 1000);
 
-// ── Chat ─────────────────────────────────────────────
+// ── Chat (Telegram Bot API connected) ────────────────
 
 const chatMessages = document.getElementById('chat-messages');
 const chatInput = document.getElementById('chat-input');
 const chatSend = document.getElementById('chat-send');
 
-const SUNNY_RESPONSES = [
-  '좋은 하루 보내세요.',
-  '오늘도 화이팅이에요.',
-  '무엇이든 도와드릴게요.',
-  '잠시 후 다시 확인해 볼게요.',
-  '알겠습니다. 메모해 둘게요.',
-];
+// Load from config.js (not committed to git)
+const TG_BOT_TOKEN = window.TG_CONFIG?.botToken || '';
+const TG_CHAT_ID = window.TG_CONFIG?.chatId || '';
+let lastUpdateId = 0;
+let pollingActive = false;
 
 function escapeHtml(str) {
   const div = document.createElement('div');
@@ -465,23 +463,72 @@ function addMessage(text, isUser) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-function sendMessage() {
+async function sendTelegramMessage(text) {
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TG_CHAT_ID,
+        text: `[대시보드] ${text}`,
+      }),
+    });
+    return res.ok;
+  } catch (e) {
+    console.error('TG send error:', e);
+    return false;
+  }
+}
+
+async function pollTelegramUpdates() {
+  if (pollingActive) return;
+  pollingActive = true;
+  try {
+    const res = await fetch(
+      `https://api.telegram.org/bot${TG_BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}&timeout=30&allowed_updates=["message"]`
+    );
+    if (!res.ok) { pollingActive = false; return; }
+    const data = await res.json();
+    if (data.ok && data.result.length > 0) {
+      for (const update of data.result) {
+        lastUpdateId = update.update_id;
+        const msg = update.message;
+        if (msg && msg.chat && String(msg.chat.id) === TG_CHAT_ID) {
+          // Only show bot replies (from_id != chat_id means it's from the bot/Sunny)
+          if (msg.from && msg.from.is_bot) {
+            addMessage(msg.text || '(미디어)', false);
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.error('TG poll error:', e);
+  }
+  pollingActive = false;
+}
+
+async function sendMessage() {
   const text = chatInput.value.trim();
   if (!text) return;
 
   addMessage(text, true);
   chatInput.value = '';
 
-  setTimeout(() => {
-    const response = SUNNY_RESPONSES[Math.floor(Math.random() * SUNNY_RESPONSES.length)];
-    addMessage(response, false);
-  }, 600);
+  const ok = await sendTelegramMessage(text);
+  if (!ok) {
+    addMessage('⚠️ 전송 실패', false);
+  }
 }
 
 chatSend.addEventListener('click', sendMessage);
 chatInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
+
+// Poll for bot responses every 5 seconds
+setInterval(pollTelegramUpdates, 5000);
+// Initial poll
+setTimeout(pollTelegramUpdates, 1000);
 
 // ── YouTube (channel subscriptions) ──────────────────
 
