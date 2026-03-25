@@ -364,7 +364,6 @@ async function fetchAirQuality() {
     const res = await fetch('data/air.json?t=' + Date.now());
     if (!res.ok) throw new Error('No air data');
     const data = await res.json();
-    const data = await res.json();
 
     // Navigate to airQualitySensor
     const sensor = data?.response?.airQualitySensor || data?.result?.airQualitySensor || data?.airQualitySensor || {};
