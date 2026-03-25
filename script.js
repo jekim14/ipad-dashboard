@@ -443,11 +443,9 @@ const chatMessages = document.getElementById('chat-messages');
 const chatInput = document.getElementById('chat-input');
 const chatSend = document.getElementById('chat-send');
 
-// Load from config.js (not committed to git)
+// Load from config.js
 const TG_BOT_TOKEN = window.TG_CONFIG?.botToken || '';
 const TG_CHAT_ID = window.TG_CONFIG?.chatId || '';
-let lastUpdateId = 0;
-let pollingActive = false;
 
 function escapeHtml(str) {
   const div = document.createElement('div');
@@ -480,33 +478,6 @@ async function sendTelegramMessage(text) {
   }
 }
 
-async function pollTelegramUpdates() {
-  if (pollingActive) return;
-  pollingActive = true;
-  try {
-    const res = await fetch(
-      `https://api.telegram.org/bot${TG_BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}&timeout=30&allowed_updates=["message"]`
-    );
-    if (!res.ok) { pollingActive = false; return; }
-    const data = await res.json();
-    if (data.ok && data.result.length > 0) {
-      for (const update of data.result) {
-        lastUpdateId = update.update_id;
-        const msg = update.message;
-        if (msg && msg.chat && String(msg.chat.id) === TG_CHAT_ID) {
-          // Only show bot replies (from_id != chat_id means it's from the bot/Sunny)
-          if (msg.from && msg.from.is_bot) {
-            addMessage(msg.text || '(미디어)', false);
-          }
-        }
-      }
-    }
-  } catch (e) {
-    console.error('TG poll error:', e);
-  }
-  pollingActive = false;
-}
-
 async function sendMessage() {
   const text = chatInput.value.trim();
   if (!text) return;
@@ -514,9 +485,15 @@ async function sendMessage() {
   addMessage(text, true);
   chatInput.value = '';
 
-  const ok = await sendTelegramMessage(text);
-  if (!ok) {
-    addMessage('⚠️ 전송 실패', false);
+  if (TG_BOT_TOKEN && TG_CHAT_ID) {
+    const ok = await sendTelegramMessage(text);
+    if (ok) {
+      addMessage('☀️ 텔레그램으로 전송했어요. 답장은 텔레그램에서 확인하세요!', false);
+    } else {
+      addMessage('⚠️ 전송 실패', false);
+    }
+  } else {
+    addMessage('⚠️ 텔레그램 설정이 필요해요 (config.js)', false);
   }
 }
 
@@ -524,11 +501,6 @@ chatSend.addEventListener('click', sendMessage);
 chatInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
-
-// Poll for bot responses every 5 seconds
-setInterval(pollTelegramUpdates, 5000);
-// Initial poll
-setTimeout(pollTelegramUpdates, 1000);
 
 // ── YouTube (channel subscriptions) ──────────────────
 
