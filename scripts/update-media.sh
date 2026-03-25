@@ -13,17 +13,22 @@ import xml.etree.ElementTree as ET
 import urllib.request
 import json
 import sys
+import os
 
-CHANNELS = [
-    ("UCyn-K7rZLXjGl7VXGweIlcA", "백종원"),
-    ("UCX-USfenzQlhrEJR1zD5IYw", "서울의봄"),
-    ("UCQ2DWm5Md16Dc3xRwwhVE7Q", "안될과학"),
-    ("UCsJ6RuBiTVWRX156FVbeaGg", "지식인미나니"),
-    ("UCAuUUnT6oDeKwE6v1NGQxug", "TED"),
-    ("UCq8ZAAsI89IoJ-fn1gYpO3g", "Kurzgesagt"),
-    ("UC4eYXhJI4-7wSWc8UNRwD4A", "NPR"),
-    ("UCupDOc54HJbIPtgLjhABOZw", "SBS"),
-]
+REPO_DIR = "/tmp/ipad-dashboard"
+
+# Load subscriptions from YouTube API data
+SUB_FILE = os.path.join(REPO_DIR, 'data', 'subscriptions.json')
+try:
+    with open(SUB_FILE) as f:
+        CHANNELS = [(ch['id'], ch['name']) for ch in json.load(f)]
+except Exception:
+    CHANNELS = [
+        ("UCyn-K7rZLXjGl7VXGweIlcA", "백종원"),
+        ("UCQ2DWm5Md16Dc3xRwwhVE7Q", "안될과학"),
+        ("UCsJ6RuBiTVWRX156FVbeaGg", "지식인미나니"),
+        ("UCAuUUnT6oDeKwE6v1NGQxug", "TED"),
+    ]
 
 ns = {
     'atom': 'http://www.w3.org/2005/Atom',
@@ -31,19 +36,25 @@ ns = {
     'media': 'http://search.yahoo.com/mrss/',
 }
 
-videos = []
+import concurrent.futures
+from datetime import datetime
 
-for ch_id, ch_name in CHANNELS:
+videos = []
+errors = 0
+
+def fetch_channel(args):
+    ch_id, ch_name = args
+    results = []
     try:
         url = f"https://www.youtube.com/feeds/videos.xml?channel_id={ch_id}"
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=8) as resp:
             root = ET.parse(resp).getroot()
-        for entry in root.findall('atom:entry', ns)[:2]:
+        for entry in root.findall('atom:entry', ns)[:1]:  # 1 latest per channel
             vid = entry.find('yt:videoId', ns).text
             title = entry.find('atom:title', ns).text
             published = entry.find('atom:published', ns).text
-            videos.append({
+            results.append({
                 "id": vid,
                 "title": title,
                 "channel": ch_name,
@@ -51,16 +62,24 @@ for ch_id, ch_name in CHANNELS:
                 "published": published,
                 "thumb": f"https://img.youtube.com/vi/{vid}/mqdefault.jpg",
             })
-    except Exception as e:
-        print(f"Warning: {ch_name} failed: {e}", file=sys.stderr)
+    except Exception:
+        pass
+    return results
 
-# Sort by published date descending
+# Parallel fetch (max 20 concurrent)
+with concurrent.futures.ThreadPoolExecutor(max_workers=20) as pool:
+    for result in pool.map(fetch_channel, CHANNELS):
+        videos.extend(result)
+
+# Sort by published date descending, take top 12
 videos.sort(key=lambda v: v.get("published", ""), reverse=True)
+videos = videos[:12]
 
-with open(sys.argv[1] if len(sys.argv) > 1 else "/tmp/ipad-dashboard/data/media.json", "w") as f:
-    json.dump({"updated": __import__("datetime").datetime.now().isoformat(), "videos": videos}, f, ensure_ascii=False, indent=2)
+output = sys.argv[1] if len(sys.argv) > 1 else "/tmp/ipad-dashboard/data/media.json"
+with open(output, "w") as f:
+    json.dump({"updated": datetime.now().isoformat(), "videos": videos, "totalChannels": len(CHANNELS)}, f, ensure_ascii=False, indent=2)
 
-print(f"Fetched {len(videos)} videos from {len(CHANNELS)} channels")
+print(f"Fetched {len(videos)} latest videos from {len(CHANNELS)} subscribed channels")
 PYEOF
 
 # Git push if changed
