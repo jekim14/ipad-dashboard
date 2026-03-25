@@ -174,53 +174,43 @@ async function fetchStocksAndFX() {
 fetchStocksAndFX();
 setInterval(fetchStocksAndFX, 30 * 60 * 1000);
 
-// ── Calendar Events ──────────────────────────────────
-
-// Google Calendar API config — set your API key to enable live data
-const GCAL_CONFIG = {
-  apiKey: '', // paste your Google Calendar API key here
-  calendarId: 'jekim14@g.ut.ac.kr',
-};
+// ── Calendar Events (from pre-generated data/calendar.json) ──
 
 async function fetchCalendarEvents() {
   const el = document.getElementById('today-events');
 
-  if (!GCAL_CONFIG.apiKey) {
-    // No API key — show placeholder
-    el.innerHTML = '<li class="calendar-empty">Google Calendar API key를 설정하세요</li>';
-    return;
-  }
-
   try {
-    const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
-
-    const params = new URLSearchParams({
-      key: GCAL_CONFIG.apiKey,
-      timeMin: startOfDay.toISOString(),
-      timeMax: endOfDay.toISOString(),
-      singleEvents: 'true',
-      orderBy: 'startTime',
-      maxResults: '10',
-    });
-
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GCAL_CONFIG.calendarId)}/events?${params}`;
-    const res = await fetch(url);
+    const res = await fetch('data/calendar.json?t=' + Date.now());
     const data = await res.json();
 
-    if (!data.items || data.items.length === 0) {
+    const items = data.events || data.items || data || [];
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
+
+    // Filter today's events, skip workingLocation events
+    const todayEvents = items.filter(item => {
+      if (item.eventType === 'workingLocation') return false;
+      const start = item.start?.dateTime || item.start?.date || '';
+      return start.startsWith(todayStr);
+    });
+
+    if (todayEvents.length === 0) {
       el.innerHTML = '<li class="calendar-empty">일정 없음</li>';
       return;
     }
 
-    const events = data.items.map(item => {
-      const start = item.start.dateTime || item.start.date;
-      const time = item.start.dateTime
-        ? new Date(start).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false })
-        : '종일';
+    const events = todayEvents.map(item => {
+      const startStr = item.start?.dateTime || item.start?.date || '';
+      let time = '종일';
+      if (item.start?.dateTime) {
+        const d = new Date(startStr);
+        time = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+      }
       return { time, title: item.summary || '(제목 없음)' };
     });
+
+    // Sort by time
+    events.sort((a, b) => a.time.localeCompare(b.time));
 
     el.innerHTML = events.map(e => `
       <li class="calendar-event">
@@ -228,7 +218,7 @@ async function fetchCalendarEvents() {
         <span class="event-title">${e.title}</span>
       </li>`).join('');
   } catch (e) {
-    el.innerHTML = '<li class="calendar-empty">캘린더를 불러올 수 없음</li>';
+    el.innerHTML = '<li class="calendar-empty">캘린더 데이터 없음</li>';
   }
 }
 
