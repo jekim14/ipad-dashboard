@@ -136,27 +136,43 @@
       <div class="air-footer" id="air-updated">연구실 · --:-- 업데이트</div>
     </div>
 
-    <!-- Media Player (moderate size, with thumbnail) -->
+    <!-- Media Player -->
     <div class="widget youtube-widget">
       <div class="widget-header">
         <span class="widget-label">MEDIA</span>
         <span class="widget-rule"></span>
       </div>
+      <!-- Player area -->
       <div class="yt-player-wrap">
         <div class="yt-player-area" id="yt-player-area">
-          <iframe id="yt-iframe" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+          <div id="yt-player"></div>
           <div class="yt-thumb-grid" id="yt-thumb-grid"></div>
         </div>
       </div>
-      <div class="yt-now-playing" id="yt-now-playing"></div>
-      <div class="yt-channels" id="yt-channels"></div>
+      <!-- Controls -->
+      <div class="yt-controls" id="yt-controls">
+        <div class="yt-now-info">
+          <span class="yt-now-title" id="yt-now-title"></span>
+          <span class="yt-now-channel" id="yt-now-channel"></span>
+        </div>
+        <div class="yt-progress-wrap" id="yt-progress-wrap">
+          <div class="yt-progress-bar" id="yt-progress-bar"></div>
+        </div>
+        <div class="yt-btn-row">
+          <button class="yt-ctrl-btn" id="yt-play-pause" title="재생/일시정지">▶</button>
+          <span class="yt-time" id="yt-time">0:00 / 0:00</span>
+          <button class="yt-ctrl-btn" id="yt-back-to-grid" title="목록">☰</button>
+        </div>
+      </div>
+      <!-- URL input -->
       <div class="yt-url-area">
-        <input type="text" id="yt-url-input" placeholder="YouTube URL" autocomplete="off">
+        <input type="text" id="yt-url-input" placeholder="YouTube URL 또는 검색어" autocomplete="off">
         <button class="yt-btn" id="yt-load">▶</button>
       </div>
     </div>
 
   </div>
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script src="script.js"></script>
 </body>
 </html>

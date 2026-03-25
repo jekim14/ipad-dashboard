@@ -427,7 +427,7 @@ async function fetchAirQuality() {
 setTimeout(fetchAirQuality, 2000);
 setInterval(fetchAirQuality, 5 * 60 * 1000);
 
-// ── Chat removed ─────────────────────────────────────
+// ── Utility ──────────────────────────────────────────
 
 function escapeHtml(str) {
   const div = document.createElement('div');
@@ -435,25 +435,23 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-// ── YouTube (channel subscriptions) ──────────────────
+// ── YouTube (IFrame Player API + data/media.json) ────
 
-const ytIframe = document.getElementById('yt-iframe');
 const ytThumbGrid = document.getElementById('yt-thumb-grid');
 const ytUrlInput = document.getElementById('yt-url-input');
 const ytLoadBtn = document.getElementById('yt-load');
-const ytNowPlaying = document.getElementById('yt-now-playing');
-const ytChannelsEl = document.getElementById('yt-channels');
+const ytControls = document.getElementById('yt-controls');
+const ytNowTitle = document.getElementById('yt-now-title');
+const ytNowChannel = document.getElementById('yt-now-channel');
+const ytPlayPause = document.getElementById('yt-play-pause');
+const ytBackToGrid = document.getElementById('yt-back-to-grid');
+const ytProgressWrap = document.getElementById('yt-progress-wrap');
+const ytProgressBar = document.getElementById('yt-progress-bar');
+const ytTimeEl = document.getElementById('yt-time');
 
-const YT_CHANNELS = [
-  { name: '스터디윗미 Study With Me', id: 'UCaKGBFr4LOQwwQ-lJQdp1bQ', tag: 'lofi/study' },
-  { name: '하루한곡', id: 'UCMxx_hBIBvbXqP08o9KcwPw', tag: 'daily music' },
-  { name: '서울의봄 ASMR', id: 'UCX-USfenzQlhrEJR1zD5IYw', tag: 'ambient' },
-  { name: '수학의신', id: 'UC-7H7ZImLfGF97Y_EJ0oeog', tag: 'education' },
-  { name: '백종원 PAIK', id: 'UCyn-K7rZLXjGl7VXGweIlcA', tag: 'cooking' },
-  { name: '국민은행 KB', id: 'UCnOfwSJHQSX-w2ghMGBtvMQ', tag: 'finance' },
-];
-
-let ytActiveChannel = null;
+let ytPlayer = null;
+let ytPlayerReady = false;
+let ytProgressTimer = null;
 
 function extractYouTubeId(url) {
   const patterns = [
@@ -467,92 +465,150 @@ function extractYouTubeId(url) {
   return null;
 }
 
-// Thumbnail grid for initial state
-const THUMB_VIDEOS = [
-  { id: 'jfKfPfyJRdk', label: 'lofi hip hop radio' },
-  { id: '5qap5aO4i9A', label: 'lo-fi beats to chill' },
-  { id: 'rUxyKA_-grg', label: '4K nature' },
-  { id: 'DWcJFNfaw9c', label: 'jazz cafe' },
-  { id: 'Na0w3Mz1WUU', label: 'fireplace' },
-  { id: 'hHW1oY26kxQ', label: 'rain sounds' },
-];
+function formatTime(sec) {
+  const s = Math.floor(sec);
+  const m = Math.floor(s / 60);
+  const ss = String(s % 60).padStart(2, '0');
+  return `${m}:${ss}`;
+}
 
-function renderThumbGrid() {
-  ytThumbGrid.innerHTML = THUMB_VIDEOS.map(v =>
-    `<div class="yt-thumb-item" data-id="${v.id}" data-label="${escapeHtml(v.label)}">
-      <img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" alt="${escapeHtml(v.label)}" loading="lazy">
-      <div class="yt-thumb-label">${escapeHtml(v.label)}</div>
-    </div>`
-  ).join('');
-
-  ytThumbGrid.querySelectorAll('.yt-thumb-item').forEach(item => {
-    item.addEventListener('click', () => {
-      loadYouTubeVideo(item.dataset.id, item.dataset.label);
-    });
+// YouTube IFrame Player API callback
+window.onYouTubeIframeAPIReady = function () {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '100%',
+    width: '100%',
+    playerVars: {
+      autoplay: 0,
+      playsinline: 1,
+      rel: 0,
+      modestbranding: 1,
+      controls: 0,
+    },
+    events: {
+      onReady: () => { ytPlayerReady = true; },
+      onStateChange: onPlayerStateChange,
+    },
   });
+};
+
+function onPlayerStateChange(event) {
+  if (event.data === YT.PlayerState.PLAYING) {
+    ytPlayPause.textContent = '⏸';
+    startProgressUpdate();
+  } else if (event.data === YT.PlayerState.PAUSED) {
+    ytPlayPause.textContent = '▶';
+    stopProgressUpdate();
+  } else if (event.data === YT.PlayerState.ENDED) {
+    ytPlayPause.textContent = '▶';
+    stopProgressUpdate();
+  }
 }
 
-function loadYouTubeVideo(url, title) {
-  const id = extractYouTubeId(url) || url; // allow raw ID
-  if (!id) return;
+function startProgressUpdate() {
+  stopProgressUpdate();
+  ytProgressTimer = setInterval(updateProgress, 500);
+}
 
-  // playsinline for iPad Safari
-  ytIframe.src = `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1`;
-  ytIframe.style.display = 'block';
+function stopProgressUpdate() {
+  if (ytProgressTimer) { clearInterval(ytProgressTimer); ytProgressTimer = null; }
+}
+
+function updateProgress() {
+  if (!ytPlayer || !ytPlayer.getDuration) return;
+  const dur = ytPlayer.getDuration();
+  const cur = ytPlayer.getCurrentTime();
+  if (dur > 0) {
+    ytProgressBar.style.width = ((cur / dur) * 100) + '%';
+    ytTimeEl.textContent = `${formatTime(cur)} / ${formatTime(dur)}`;
+  }
+}
+
+// Play a video by ID
+function playVideo(videoId, title, channel) {
+  if (!ytPlayerReady) return;
+
+  ytPlayer.loadVideoById({ videoId, suggestedQuality: 'default' });
+  document.getElementById('yt-player').style.display = 'block';
   ytThumbGrid.style.display = 'none';
+  ytControls.style.display = 'block';
 
-  ytNowPlaying.textContent = title || url;
-  ytNowPlaying.style.display = 'block';
+  ytNowTitle.textContent = title || videoId;
+  ytNowChannel.textContent = channel || '';
 }
 
-function loadChannelLatest(channelId, channelName) {
-  ytActiveChannel = channelId;
-  ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(channelId)}&autoplay=1&playsinline=1`;
-  ytIframe.style.display = 'block';
-  ytThumbGrid.style.display = 'none';
-
-  ytNowPlaying.textContent = channelName;
-  ytNowPlaying.style.display = 'block';
-
-  renderChannelList();
+// Show grid, hide player
+function showGrid() {
+  if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
+  document.getElementById('yt-player').style.display = 'none';
+  ytThumbGrid.style.display = '';
+  ytControls.style.display = 'none';
+  stopProgressUpdate();
 }
 
-function renderChannelList() {
-  ytChannelsEl.innerHTML = YT_CHANNELS.map(ch => {
-    const isActive = ytActiveChannel === ch.id;
-    return `<div class="yt-channel-item${isActive ? ' active' : ''}" data-id="${ch.id}" data-name="${escapeHtml(ch.name)}">
-      <span class="yt-ch-marker">${isActive ? '\u25B8' : '\u2013'}</span>
-      <span>${escapeHtml(ch.name)}</span>
-    </div>`;
-  }).join('');
+// Render thumbnail grid from data/media.json
+async function loadMediaGrid() {
+  try {
+    const res = await fetch('data/media.json?t=' + Date.now());
+    const data = await res.json();
+    const videos = (data.videos || []).slice(0, 6); // 3x2 grid
 
-  ytChannelsEl.querySelectorAll('.yt-channel-item').forEach(item => {
-    item.addEventListener('click', () => {
-      loadChannelLatest(item.dataset.id, item.dataset.name);
+    ytThumbGrid.innerHTML = videos.map(v =>
+      `<div class="yt-thumb-item" data-id="${v.id}" data-title="${escapeHtml(v.title)}" data-channel="${escapeHtml(v.channel)}">
+        <img src="${v.thumb}" alt="${escapeHtml(v.title)}" loading="lazy">
+        <div class="yt-thumb-label">
+          ${escapeHtml(v.title.length > 30 ? v.title.slice(0, 28) + '…' : v.title)}
+          <span class="yt-thumb-ch">${escapeHtml(v.channel)}</span>
+        </div>
+      </div>`
+    ).join('');
+
+    ytThumbGrid.querySelectorAll('.yt-thumb-item').forEach(item => {
+      item.addEventListener('click', () => {
+        playVideo(item.dataset.id, item.dataset.title, item.dataset.channel);
+      });
     });
-  });
+  } catch (e) {
+    ytThumbGrid.innerHTML = '<div style="color:#999;padding:20px;text-align:center">미디어 로드 실패</div>';
+  }
 }
 
+// Controls
+ytPlayPause.addEventListener('click', () => {
+  if (!ytPlayer) return;
+  const state = ytPlayer.getPlayerState();
+  if (state === YT.PlayerState.PLAYING) {
+    ytPlayer.pauseVideo();
+  } else {
+    ytPlayer.playVideo();
+  }
+});
+
+ytBackToGrid.addEventListener('click', showGrid);
+
+// Progress bar seek
+ytProgressWrap.addEventListener('click', (e) => {
+  if (!ytPlayer || !ytPlayer.getDuration) return;
+  const rect = ytProgressWrap.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  ytPlayer.seekTo(pct * ytPlayer.getDuration(), true);
+});
+
+// URL input
 ytLoadBtn.addEventListener('click', () => {
   const url = ytUrlInput.value.trim();
-  if (url) {
-    ytActiveChannel = null;
-    loadYouTubeVideo(url);
-    renderChannelList();
-  }
+  const id = extractYouTubeId(url);
+  if (id) playVideo(id, url);
 });
 
 ytUrlInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     const url = ytUrlInput.value.trim();
-    if (url) {
-      ytActiveChannel = null;
-      loadYouTubeVideo(url);
-      renderChannelList();
-    }
+    const id = extractYouTubeId(url);
+    if (id) playVideo(id, url);
   }
 });
 
-renderChannelList();
-
-renderThumbGrid();
+// Initialize
+loadMediaGrid();
+// Refresh media grid every 30 minutes
+setInterval(loadMediaGrid, 30 * 60 * 1000);
