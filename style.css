@@ -30,26 +30,26 @@ html, body {
 
 /* ── Grid: iPad landscape optimized ───────────────── */
 /*
-  Layout (priority: clock > weather > lecture/calendar > media > stocks/air)
-  ┌──────────┬──────────────────┬──────────┐
-  │  CLOCK   │     WEATHER      │  CHAT    │
-  │  (big)   │     (big)        │  (tall)  │
-  ├──────────┼──────────┬───────┤          │
-  │ LECTURE  │ CALENDAR │ MEDIA │          │
-  │  (mid)   │  (mid)   │(mid)  │          │
-  ├────┬─────┤          │       │          │
-  │STK │ AIR │          │       │          │
-  │sm  │ sm  │          │       │          │
-  └────┴─────┴──────────┴───────┴──────────┘
+  Layout (no chat — 3 columns)
+  ┌──────────┬──────────────────────────────┐
+  │  CLOCK   │          WEATHER             │
+  │  (big)   │          (big)               │
+  ├──────────┼───────────────┬──────────────┤
+  │ LECTURE  │   CALENDAR    │    MEDIA     │
+  │  (mid)   │   (mid)       │    (mid)     │
+  ├────┬─────┤               │              │
+  │STK │ AIR │               │              │
+  │sm  │ sm  │               │              │
+  └────┴─────┴───────────────┴──────────────┘
 */
 .dashboard {
   display: grid;
-  grid-template-columns: 260px 1fr 1fr 240px;
-  grid-template-rows: 160px 1fr auto;
+  grid-template-columns: 280px 1fr 1fr;
+  grid-template-rows: 170px 1fr auto;
   grid-template-areas:
-    "clock    weather  weather   chat"
-    "class    calendar youtube   chat"
-    "stocks   air      youtube   chat";
+    "clock    weather  weather"
+    "class    calendar youtube"
+    "stocks   air      youtube";
   height: 100vh;
   height: 100dvh;
   gap: 1px;
@@ -58,7 +58,6 @@ html, body {
 
 .clock-widget    { grid-area: clock; }
 .weather-widget  { grid-area: weather; }
-.chat-widget     { grid-area: chat; }
 .class-widget    { grid-area: class; }
 .calendar-widget { grid-area: calendar; }
 .stocks-widget   { grid-area: stocks; }
@@ -518,60 +517,7 @@ html, body {
   flex-shrink: 0;
 }
 
-/* ── Chat (right column, full height) ─────────────── */
-.chat-widget { gap: 0; }
-
-.chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 8px 0;
-}
-
-.chat-message {
-  padding: 6px 0;
-  font-size: 13px;
-  font-weight: 300;
-  line-height: 1.6;
-}
-.bot-message { border-bottom: 1px solid var(--rule-light); }
-.user-message { color: var(--ink-light); }
-.message-text { display: block; }
-
-.chat-input-area {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-  padding-top: 8px;
-  border-top: 1px solid var(--rule-light);
-}
-
-#chat-input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid var(--rule);
-  background: var(--paper);
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 300;
-  color: var(--ink);
-  outline: none;
-}
-#chat-input::placeholder { color: var(--ink-light); font-weight: 200; }
-#chat-input:focus { border-color: var(--ink); }
-
-#chat-send {
-  width: 32px; height: 32px;
-  display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--rule);
-  background: var(--paper);
-  color: var(--ink);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-#chat-send:hover { border-color: var(--ink); }
+/* ── Chat removed ─────────────────────────────────── */
 
 /* ── YouTube / Media (MODERATE) ──────────────────── */
 .youtube-widget {
@@ -723,7 +669,7 @@ html, body {
     grid-template-rows: auto;
     grid-template-areas:
       "clock" "weather" "class" "calendar"
-      "stocks" "air" "youtube" "chat";
+      "stocks" "air" "youtube";
     overflow-y: auto;
   }
   .widget { min-height: 200px; }
