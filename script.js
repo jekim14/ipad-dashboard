@@ -341,6 +341,7 @@ const THINQ_CONFIG = {
   deviceId: 'c8e72fe199519837e0cfc562b8363995384d6fd38e7044c0969150994df52b3a',
   apiBase: 'https://api-kic.lgthinq.com',
   clientId: 'openclaw',
+  apiKey: 'v6GFvkweNo7DK7yD3ylIZ9w52aKBU0eJ7wLXkSR3',
 };
 
 function getAirStatus(val, thresholds) {
@@ -359,12 +360,15 @@ function thinqLevelToKor(level) {
 async function fetchAirQuality() {
   try {
     const res = await fetch(
-      `${THINQ_CONFIG.apiBase}/v1/service/devices/${THINQ_CONFIG.deviceId}/status`,
+      `${THINQ_CONFIG.apiBase}/devices/${THINQ_CONFIG.deviceId}/state`,
       {
         headers: {
           'Authorization': `Bearer ${THINQ_CONFIG.pat}`,
-          'x-country-code': 'KR',
+          'x-country': 'KR',
           'x-client-id': THINQ_CONFIG.clientId,
+          'x-api-key': THINQ_CONFIG.apiKey,
+          'x-service-phase': 'OP',
+          'x-message-id': `dash-${Date.now()}`,
         },
       }
     );
@@ -372,8 +376,8 @@ async function fetchAirQuality() {
     if (!res.ok) throw new Error(`ThinQ ${res.status}`);
     const data = await res.json();
 
-    // Navigate to airQualitySensor (may be nested under result)
-    const sensor = data?.result?.airQualitySensor || data?.airQualitySensor || {};
+    // Navigate to airQualitySensor
+    const sensor = data?.response?.airQualitySensor || data?.result?.airQualitySensor || data?.airQualitySensor || {};
 
     const pm25 = sensor.PM2 ?? '--';
     const pm10 = sensor.PM10 ?? '--';
