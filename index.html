@@ -15,7 +15,7 @@
 
   <div class="dashboard">
 
-    <!-- Clock -->
+    <!-- Clock (large, prominent) -->
     <div class="widget clock-widget">
       <div class="flip-clock" id="flip-clock">
         <div class="flip-digit" id="h0"><div class="flip-card"><span>0</span></div></div>
@@ -27,7 +27,7 @@
       <div class="clock-date" id="clock-date"></div>
     </div>
 
-    <!-- Weather -->
+    <!-- Weather (large) -->
     <div class="widget weather-widget">
       <div class="widget-header">
         <span class="widget-label">WEATHER</span>
@@ -47,29 +47,7 @@
       </div>
     </div>
 
-    <!-- Chat -->
-    <div class="widget chat-widget">
-      <div class="widget-header">
-        <span class="widget-label">ASSISTANT</span>
-        <span class="widget-rule"></span>
-      </div>
-      <div class="chat-messages" id="chat-messages">
-        <div class="chat-message bot-message">
-          <span class="message-text">무엇을 도와드릴까요?</span>
-        </div>
-      </div>
-      <div class="chat-input-area">
-        <input type="text" id="chat-input" placeholder="메시지 입력" autocomplete="off">
-        <button id="chat-send" aria-label="Send">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Class Countdown -->
+    <!-- Lecture Countdown (important) -->
     <div class="widget class-widget">
       <div class="widget-header">
         <span class="widget-label">LECTURE</span>
@@ -84,7 +62,7 @@
       <div class="class-today-list" id="class-today-list"></div>
     </div>
 
-    <!-- Calendar (separate) -->
+    <!-- Calendar (important) -->
     <div class="widget calendar-widget">
       <div class="widget-header">
         <span class="widget-label">TODAY</span>
@@ -93,7 +71,7 @@
       <ul class="calendar-events-list" id="today-events"></ul>
     </div>
 
-    <!-- Stocks -->
+    <!-- Stocks (compact) -->
     <div class="widget stocks-widget">
       <div class="widget-header">
         <span class="widget-label">MARKETS</span>
@@ -124,7 +102,7 @@
       <div class="widget-footer" id="stocks-updated"></div>
     </div>
 
-    <!-- Air Quality (Design D: Minimal Grid) -->
+    <!-- Air Quality (compact) -->
     <div class="widget air-widget">
       <div class="widget-header">
         <span class="widget-label">INDOOR AIR</span>
@@ -133,32 +111,32 @@
       <div class="air-status-row">
         <div class="air-dot" id="air-dot"></div>
         <span class="air-status-text" id="air-status-text">좋음</span>
-        <span class="air-status-aqi" id="air-aqi">AQI 32</span>
+        <span class="air-status-aqi" id="air-aqi"></span>
       </div>
       <div class="air-grid">
         <div class="air-cell">
           <span class="air-cell-label">PM2.5</span>
-          <span class="air-cell-val"><span id="air-pm25">12</span> <span class="air-cell-unit">µg/m³</span></span>
-          <span class="air-cell-sub" id="air-pm25-status">좋음</span>
+          <span class="air-cell-val"><span id="air-pm25">--</span> <span class="air-cell-unit">µg/m³</span></span>
+          <span class="air-cell-sub" id="air-pm25-status">--</span>
         </div>
         <div class="air-cell">
           <span class="air-cell-label">PM10</span>
-          <span class="air-cell-val"><span id="air-pm10">25</span> <span class="air-cell-unit">µg/m³</span></span>
-          <span class="air-cell-sub" id="air-pm10-status">보통</span>
+          <span class="air-cell-val"><span id="air-pm10">--</span> <span class="air-cell-unit">µg/m³</span></span>
+          <span class="air-cell-sub" id="air-pm10-status">--</span>
         </div>
         <div class="air-cell">
           <span class="air-cell-label">온도</span>
-          <span class="air-cell-val"><span id="air-temp">23</span>°C</span>
+          <span class="air-cell-val"><span id="air-temp">--</span>°C</span>
         </div>
         <div class="air-cell">
           <span class="air-cell-label">습도</span>
-          <span class="air-cell-val"><span id="air-humidity">45</span>%</span>
+          <span class="air-cell-val"><span id="air-humidity">--</span>%</span>
         </div>
       </div>
-      <div class="air-footer" id="air-updated">오송 · --:-- 업데이트</div>
+      <div class="air-footer" id="air-updated">연구실 · --:-- 업데이트</div>
     </div>
 
-    <!-- YouTube -->
+    <!-- Media Player (moderate size, with thumbnail) -->
     <div class="widget youtube-widget">
       <div class="widget-header">
         <span class="widget-label">MEDIA</span>
@@ -167,15 +145,35 @@
       <div class="yt-player-wrap">
         <div class="yt-player-area" id="yt-player-area">
           <iframe id="yt-iframe" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-          <div class="yt-empty" id="yt-empty">채널을 선택하세요</div>
+          <div class="yt-thumb-grid" id="yt-thumb-grid"></div>
         </div>
       </div>
       <div class="yt-now-playing" id="yt-now-playing"></div>
       <div class="yt-channels" id="yt-channels"></div>
       <div class="yt-url-area">
         <input type="text" id="yt-url-input" placeholder="YouTube URL" autocomplete="off">
-        <button class="yt-btn" id="yt-load">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        <button class="yt-btn" id="yt-load">▶</button>
+      </div>
+    </div>
+
+    <!-- Chat -->
+    <div class="widget chat-widget">
+      <div class="widget-header">
+        <span class="widget-label">ASSISTANT</span>
+        <span class="widget-rule"></span>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-message bot-message">
+          <span class="message-text">무엇을 도와드릴까요?</span>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="메시지 입력" autocomplete="off">
+        <button id="chat-send" aria-label="Send">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
         </button>
       </div>
     </div>

@@ -486,7 +486,7 @@ chatInput.addEventListener('keydown', (e) => {
 // ── YouTube (channel subscriptions) ──────────────────
 
 const ytIframe = document.getElementById('yt-iframe');
-const ytEmpty = document.getElementById('yt-empty');
+const ytThumbGrid = document.getElementById('yt-thumb-grid');
 const ytUrlInput = document.getElementById('yt-url-input');
 const ytLoadBtn = document.getElementById('yt-load');
 const ytNowPlaying = document.getElementById('yt-now-playing');
@@ -515,16 +515,40 @@ function extractYouTubeId(url) {
   return null;
 }
 
+// Thumbnail grid for initial state
+const THUMB_VIDEOS = [
+  { id: 'jfKfPfyJRdk', label: 'lofi hip hop radio' },
+  { id: '5qap5aO4i9A', label: 'lo-fi beats to chill' },
+  { id: 'rUxyKA_-grg', label: '4K nature' },
+  { id: 'DWcJFNfaw9c', label: 'jazz cafe' },
+  { id: 'Na0w3Mz1WUU', label: 'fireplace' },
+  { id: 'hHW1oY26kxQ', label: 'rain sounds' },
+];
+
+function renderThumbGrid() {
+  ytThumbGrid.innerHTML = THUMB_VIDEOS.map(v =>
+    `<div class="yt-thumb-item" data-id="${v.id}" data-label="${escapeHtml(v.label)}">
+      <img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" alt="${escapeHtml(v.label)}" loading="lazy">
+      <div class="yt-thumb-label">${escapeHtml(v.label)}</div>
+    </div>`
+  ).join('');
+
+  ytThumbGrid.querySelectorAll('.yt-thumb-item').forEach(item => {
+    item.addEventListener('click', () => {
+      loadYouTubeVideo(item.dataset.id, item.dataset.label);
+    });
+  });
+}
+
 function loadYouTubeVideo(url, title) {
-  const id = extractYouTubeId(url);
+  const id = extractYouTubeId(url) || url; // allow raw ID
   if (!id) return;
 
   ytIframe.src = `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`;
   ytIframe.classList.add('visible');
-  ytEmpty.classList.add('hidden');
+  ytThumbGrid.classList.add('hidden');
 
-  const displayTitle = title || url;
-  ytNowPlaying.textContent = displayTitle;
+  ytNowPlaying.textContent = title || url;
   ytNowPlaying.classList.add('visible');
 }
 
@@ -532,7 +556,7 @@ function loadChannelLatest(channelId, channelName) {
   ytActiveChannel = channelId;
   ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(channelId)}&autoplay=1`;
   ytIframe.classList.add('visible');
-  ytEmpty.classList.add('hidden');
+  ytThumbGrid.classList.add('hidden');
 
   ytNowPlaying.textContent = channelName;
   ytNowPlaying.classList.add('visible');
@@ -577,3 +601,5 @@ ytUrlInput.addEventListener('keydown', (e) => {
 });
 
 renderChannelList();
+
+renderThumbGrid();
