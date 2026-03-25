@@ -359,21 +359,11 @@ function thinqLevelToKor(level) {
 
 async function fetchAirQuality() {
   try {
-    const res = await fetch(
-      `${THINQ_CONFIG.apiBase}/devices/${THINQ_CONFIG.deviceId}/state`,
-      {
-        headers: {
-          'Authorization': `Bearer ${THINQ_CONFIG.pat}`,
-          'x-country': 'KR',
-          'x-client-id': THINQ_CONFIG.clientId,
-          'x-api-key': THINQ_CONFIG.apiKey,
-          'x-service-phase': 'OP',
-          'x-message-id': `dash-${Date.now()}`,
-        },
-      }
-    );
-
-    if (!res.ok) throw new Error(`ThinQ ${res.status}`);
+    // ThinQ API preflight fails (no CORS headers on OPTIONS)
+    // Use pre-generated data/air.json (updated every 5min by cron)
+    const res = await fetch('data/air.json?t=' + Date.now());
+    if (!res.ok) throw new Error('No air data');
+    const data = await res.json();
     const data = await res.json();
 
     // Navigate to airQualitySensor
@@ -506,22 +496,23 @@ function loadYouTubeVideo(url, title) {
   const id = extractYouTubeId(url) || url; // allow raw ID
   if (!id) return;
 
-  ytIframe.src = `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`;
-  ytIframe.classList.add('visible');
-  ytThumbGrid.classList.add('hidden');
+  // playsinline for iPad Safari
+  ytIframe.src = `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1`;
+  ytIframe.style.display = 'block';
+  ytThumbGrid.style.display = 'none';
 
   ytNowPlaying.textContent = title || url;
-  ytNowPlaying.classList.add('visible');
+  ytNowPlaying.style.display = 'block';
 }
 
 function loadChannelLatest(channelId, channelName) {
   ytActiveChannel = channelId;
-  ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(channelId)}&autoplay=1`;
-  ytIframe.classList.add('visible');
-  ytThumbGrid.classList.add('hidden');
+  ytIframe.src = `https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(channelId)}&autoplay=1&playsinline=1`;
+  ytIframe.style.display = 'block';
+  ytThumbGrid.style.display = 'none';
 
   ytNowPlaying.textContent = channelName;
-  ytNowPlaying.classList.add('visible');
+  ytNowPlaying.style.display = 'block';
 
   renderChannelList();
 }
