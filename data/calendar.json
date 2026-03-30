@@ -174,6 +174,45 @@
       "status": "confirmed",
       "summary": "식품생명공학연구론-1",
       "updated": "2026-02-26T14:36:50.094Z"
+    },
+    {
+      "created": "2025-10-14T07:13:58.000Z",
+      "creator": {
+        "displayName": "김종은",
+        "email": "jekim14@g.ut.ac.kr",
+        "self": true
+      },
+      "end": {
+        "date": "2026-04-01"
+      },
+      "etag": "\"3520852077716542\"",
+      "eventType": "workingLocation",
+      "htmlLink": "https://www.google.com/calendar/event?eid=bDY0MWtsbTVqamEwNHZlaGF1djZzNml2c29fMjAyNjAzMzEgamVraW0xNEBnLnV0LmFjLmty",
+      "iCalUID": "l641klm5jja04vehauv6s6ivso@google.com",
+      "id": "l641klm5jja04vehauv6s6ivso_20260331",
+      "kind": "calendar#event",
+      "organizer": {
+        "displayName": "김종은",
+        "email": "jekim14@g.ut.ac.kr",
+        "self": true
+      },
+      "originalStartTime": {
+        "date": "2026-03-31"
+      },
+      "recurringEventId": "l641klm5jja04vehauv6s6ivso",
+      "reminders": {},
+      "start": {
+        "date": "2026-03-31"
+      },
+      "status": "confirmed",
+      "summary": "사무실",
+      "transparency": "transparent",
+      "updated": "2025-10-14T07:13:58.858Z",
+      "visibility": "public",
+      "workingLocationProperties": {
+        "officeLocation": {},
+        "type": "officeLocation"
+      }
     }
   ],
   "nextPageToken": ""
