@@ -1,45 +1,6 @@
 {
   "events": [
     {
-      "created": "2025-10-14T07:13:58.000Z",
-      "creator": {
-        "displayName": "김종은",
-        "email": "jekim14@g.ut.ac.kr",
-        "self": true
-      },
-      "end": {
-        "date": "2026-04-08"
-      },
-      "etag": "\"3520852077716542\"",
-      "eventType": "workingLocation",
-      "htmlLink": "https://www.google.com/calendar/event?eid=bDY0MWtsbTVqamEwNHZlaGF1djZzNml2c29fMjAyNjA0MDcgamVraW0xNEBnLnV0LmFjLmty",
-      "iCalUID": "l641klm5jja04vehauv6s6ivso@google.com",
-      "id": "l641klm5jja04vehauv6s6ivso_20260407",
-      "kind": "calendar#event",
-      "organizer": {
-        "displayName": "김종은",
-        "email": "jekim14@g.ut.ac.kr",
-        "self": true
-      },
-      "originalStartTime": {
-        "date": "2026-04-07"
-      },
-      "recurringEventId": "l641klm5jja04vehauv6s6ivso",
-      "reminders": {},
-      "start": {
-        "date": "2026-04-07"
-      },
-      "status": "confirmed",
-      "summary": "사무실",
-      "transparency": "transparent",
-      "updated": "2025-10-14T07:13:58.858Z",
-      "visibility": "public",
-      "workingLocationProperties": {
-        "officeLocation": {},
-        "type": "officeLocation"
-      }
-    },
-    {
       "created": "2025-10-14T07:13:59.000Z",
       "creator": {
         "displayName": "김종은",
@@ -179,6 +140,113 @@
       "status": "confirmed",
       "summary": "정밀식품학 연구-1",
       "updated": "2026-02-26T14:37:41.270Z"
+    },
+    {
+      "created": "2025-10-14T07:13:59.000Z",
+      "creator": {
+        "displayName": "김종은",
+        "email": "jekim14@g.ut.ac.kr",
+        "self": true
+      },
+      "end": {
+        "date": "2026-04-10"
+      },
+      "etag": "\"3520852079285662\"",
+      "eventType": "workingLocation",
+      "htmlLink": "https://www.google.com/calendar/event?eid=bXRkMDdpZDRsbWhlN3Nlb2oyNzkxcmFucDhfMjAyNjA0MDkgamVraW0xNEBnLnV0LmFjLmty",
+      "iCalUID": "mtd07id4lmhe7seoj2791ranp8@google.com",
+      "id": "mtd07id4lmhe7seoj2791ranp8_20260409",
+      "kind": "calendar#event",
+      "organizer": {
+        "displayName": "김종은",
+        "email": "jekim14@g.ut.ac.kr",
+        "self": true
+      },
+      "originalStartTime": {
+        "date": "2026-04-09"
+      },
+      "recurringEventId": "mtd07id4lmhe7seoj2791ranp8",
+      "reminders": {},
+      "start": {
+        "date": "2026-04-09"
+      },
+      "status": "confirmed",
+      "summary": "사무실",
+      "transparency": "transparent",
+      "updated": "2025-10-14T07:13:59.642Z",
+      "visibility": "public",
+      "workingLocationProperties": {
+        "officeLocation": {},
+        "type": "officeLocation"
+      }
+    },
+    {
+      "created": "2026-02-26T14:37:58.000Z",
+      "creator": {
+        "displayName": "김종은",
+        "email": "jekim14@g.ut.ac.kr",
+        "self": true
+      },
+      "end": {
+        "dateTime": "2026-04-09T10:30:00+09:00",
+        "timeZone": "Asia/Seoul"
+      },
+      "etag": "\"3544233356271742\"",
+      "eventType": "default",
+      "htmlLink": "https://www.google.com/calendar/event?eid=MzRpaXNnamNwdHM0bm9zMDNxMTg1djRqaHMgamVraW0xNEBnLnV0LmFjLmty",
+      "iCalUID": "34iisgjcpts4nos03q185v4jhs@google.com",
+      "id": "34iisgjcpts4nos03q185v4jhs",
+      "kind": "calendar#event",
+      "location": "국제관(117)",
+      "organizer": {
+        "displayName": "김종은",
+        "email": "jekim14@g.ut.ac.kr",
+        "self": true
+      },
+      "reminders": {
+        "useDefault": true
+      },
+      "start": {
+        "dateTime": "2026-04-09T09:00:00+09:00",
+        "timeZone": "Asia/Seoul"
+      },
+      "status": "confirmed",
+      "summary": "술의과학,문화그리고생활-1",
+      "updated": "2026-02-26T14:37:58.135Z"
+    },
+    {
+      "created": "2026-02-26T14:38:14.000Z",
+      "creator": {
+        "displayName": "김종은",
+        "email": "jekim14@g.ut.ac.kr",
+        "self": true
+      },
+      "end": {
+        "dateTime": "2026-04-09T16:30:00+09:00",
+        "timeZone": "Asia/Seoul"
+      },
+      "etag": "\"3544233390059070\"",
+      "eventType": "default",
+      "htmlLink": "https://www.google.com/calendar/event?eid=cW40YXZ2bTZjdDNqOGw4NmdzbXQyYmp2bWMgamVraW0xNEBnLnV0LmFjLmty",
+      "iCalUID": "qn4avvm6ct3j8l86gsmt2bjvmc@google.com",
+      "id": "qn4avvm6ct3j8l86gsmt2bjvmc",
+      "kind": "calendar#event",
+      "location": "시스템관(123)",
+      "organizer": {
+        "displayName": "김종은",
+        "email": "jekim14@g.ut.ac.kr",
+        "self": true
+      },
+      "reminders": {
+        "useDefault": true
+      },
+      "start": {
+        "dateTime": "2026-04-09T15:00:00+09:00",
+        "timeZone": "Asia/Seoul"
+      },
+      "status": "confirmed",
+      "summary": "커피,차,그리고 초콜릿-1",
+      "updated": "2026-02-26T14:38:15.029Z"
     }
   ],
   "nextPageToken": ""
