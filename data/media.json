@@ -1,101 +1,13 @@
 {
-  "updated": "2026-04-17T08:02:12.459282",
+  "updated": "2026-04-17T10:02:08.537040",
   "videos": [
     {
-      "id": "mnMedD5CMKw",
-      "title": "\"주말 2차 협상 가능성‥이스라엘-레바논 휴전\" - [LIVE] MBC 뉴스투데이 2026년 04월 17일",
-      "channel": "MBCNEWS",
-      "channelId": "UCF4Wxdo3inmxP-Y59wXDsFw",
-      "published": "2026-04-16T20:48:48+00:00",
-      "thumb": "https://img.youtube.com/vi/mnMedD5CMKw/mqdefault.jpg"
-    },
-    {
-      "id": "dgDA_b7k844",
-      "title": "서장훈도 질려버린 남편 돈 욕심ㄷㄷ | 이혼숙려캠프 | JTBC 260416 방송",
-      "channel": "JTBC Voyage",
-      "channelId": "UCF3UEVPt5zZTlBVJwDG317g",
-      "published": "2026-04-16T15:03:42+00:00",
-      "thumb": "https://img.youtube.com/vi/dgDA_b7k844/mqdefault.jpg"
-    },
-    {
-      "id": "UNf3a0t8-qY",
-      "title": "기름 펑펑 쓴다고 비난? 우리나라 수출 1위기 석유제품이야 바보야!",
-      "channel": "이동형TV",
-      "channelId": "UCd4BxCKyMHG2J0X1SerTPaQ",
-      "published": "2026-04-16T14:16:26+00:00",
-      "thumb": "https://img.youtube.com/vi/UNf3a0t8-qY/mqdefault.jpg"
-    },
-    {
-      "id": "pa4DrapUUDM",
-      "title": "장동혁 백악관 빈손 관광.. 트럼프 신성모독 사건 때문?",
-      "channel": "고발뉴스TV",
-      "channelId": "UCX7-K_PSdtAiUDLEMQwrRoQ",
-      "published": "2026-04-16T12:58:06+00:00",
-      "thumb": "https://img.youtube.com/vi/pa4DrapUUDM/mqdefault.jpg"
-    },
-    {
-      "id": "1kvDn1gI_ZI",
-      "title": "결혼 후 연애만 백번 하신 분~ #정영진 #최욱 #돌싱",
-      "channel": "웃다가!",
-      "channelId": "UCpcD2T7V2TTzaT4ZMQEOm1w",
-      "published": "2026-04-16T11:41:48+00:00",
-      "thumb": "https://img.youtube.com/vi/1kvDn1gI_ZI/mqdefault.jpg"
-    },
-    {
-      "id": "a39ZrqBWmsQ",
-      "title": "국산차는 그냥 주는데 포르쉐는 돈 받는다ㅋ",
-      "channel": "모트라인 MOTline",
-      "channelId": "UCMTZqwCdw9Nynw9BkCgfeRQ",
-      "published": "2026-04-16T11:38:27+00:00",
-      "thumb": "https://img.youtube.com/vi/a39ZrqBWmsQ/mqdefault.jpg"
-    },
-    {
-      "id": "o3-7G1xqsKc",
-      "title": "처음 맥북 샀다면 '이것' 안 하면 손해다? Mac 왕초보 입문 필수 설정 및 추천앱 ver2026.",
-      "channel": "ITSub잇섭",
-      "channelId": "UCdUcjkyZtf-1WJyPPiETF1g",
-      "published": "2026-04-16T11:01:25+00:00",
-      "thumb": "https://img.youtube.com/vi/o3-7G1xqsKc/mqdefault.jpg"
-    },
-    {
-      "id": "AVu3jEPM91g",
-      "title": "#선물 가격 #현물 유가 차이",
-      "channel": "황장수의 뉴스브리핑",
-      "channelId": "UCR0VAgd0w8QI7WWQ0E8Srdw",
-      "published": "2026-04-16T10:29:49+00:00",
-      "thumb": "https://img.youtube.com/vi/AVu3jEPM91g/mqdefault.jpg"
-    },
-    {
-      "id": "3_5wwdfc0N4",
-      "title": "카다이프 머신으로 만든 본격 새우튀김 @제로비ZeroB",
-      "channel": "은수저",
-      "channelId": "UC_BVJYxQxN5jberGxAFDlyg",
-      "published": "2026-04-16T09:30:06+00:00",
-      "thumb": "https://img.youtube.com/vi/3_5wwdfc0N4/mqdefault.jpg"
-    },
-    {
-      "id": "GCuzd3qdRgo",
-      "title": "YG대신 찾은 YGYM... (Feat. 베이비몬스터 아사, 아현)",
-      "channel": "김종국 GYM JONG KOOK",
-      "channelId": "UCoe-0EVDJnjlSoPK8ygcGwQ",
-      "published": "2026-04-16T09:00:00+00:00",
-      "thumb": "https://img.youtube.com/vi/GCuzd3qdRgo/mqdefault.jpg"
-    },
-    {
-      "id": "9y-Ti2Obj5Y",
-      "title": "♡이채연 아랑단♡ #골때리는그녀들 #ShootingStars #SBSenter",
-      "channel": "SBS Entertainment",
-      "channelId": "UCmjNKt6kITwaZTqvWuaSPLg",
-      "published": "2026-04-16T08:00:00+00:00",
-      "thumb": "https://img.youtube.com/vi/9y-Ti2Obj5Y/mqdefault.jpg"
-    },
-    {
-      "id": "ZvYZf9SG7EM",
-      "title": "[봐뉴쇼츠] 되는 게 없는 장동혁의 도피 여행",
-      "channel": "강성범tv",
-      "channelId": "UCMNGwNS4yCEsCCyu2soQDrQ",
-      "published": "2026-04-16T06:47:41+00:00",
-      "thumb": "https://img.youtube.com/vi/ZvYZf9SG7EM/mqdefault.jpg"
+      "id": "bVVV7De7xaQ",
+      "title": "이발사: 수술 가능합니다~ #취미는과학 #수술 #이발소",
+      "channel": "EBS",
+      "channelId": "UC-swf20n5xdKW0waeLpXPFQ",
+      "published": "2026-04-16T10:01:03+00:00",
+      "thumb": "https://img.youtube.com/vi/bVVV7De7xaQ/mqdefault.jpg"
     }
   ],
   "totalChannels": 304
